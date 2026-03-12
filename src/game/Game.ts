@@ -3,6 +3,7 @@
  *
  * Main game logic implementing the GameAPI interface.
  * Manages game state, piece movement, line clearing, and game flow.
+ * Supports fast drop acceleration with speed multiplier.
  */
 
 import type { GameAPI, GameState, GameStatus, Piece } from './types';
@@ -11,6 +12,7 @@ import { createRandomPiece } from './piece-factory';
 import { isValidPosition, isTouchingBottom } from './collision';
 import { rotatePiece } from './rotation';
 import { FALL_SPEEDS, LOCK_DELAY } from '../config/constants';
+import type { FastDropManager } from '../utils/FastDropManager';
 
 export class Game implements GameAPI {
   private state: GameState;
@@ -18,6 +20,7 @@ export class Game implements GameAPI {
   private lastFallTime: number = 0;
   private lockDelayStartTime: number | null = null;
   private highScore: number = 0;
+  private fastDropManager: FastDropManager | null = null;
 
   // Event callbacks
   public onScoreChange?: (score: number) => void;
@@ -36,6 +39,14 @@ export class Game implements GameAPI {
 
   public getHighScore(): number {
     return this.highScore;
+  }
+
+  /**
+   * Set fast drop manager for acceleration support
+   * Called by InputHandler to provide fast drop integration
+   */
+  public setFastDropManager(manager: FastDropManager): void {
+    this.fastDropManager = manager;
   }
 
   private createInitialState(): GameState {
@@ -204,8 +215,12 @@ export class Game implements GameAPI {
     const now = Date.now();
     const fallSpeed = FALL_SPEEDS[Math.min(this.state.level, FALL_SPEEDS.length - 1)]!;
 
-    // Auto-fall
-    if (now - this.lastFallTime >= fallSpeed) {
+    // Get speed multiplier from fast drop manager
+    const speedMultiplier = this.fastDropManager?.getSpeedMultiplier(performance.now()) ?? 1.0;
+    const adjustedFallSpeed = fallSpeed / speedMultiplier;
+
+    // Auto-fall with speed multiplier
+    if (now - this.lastFallTime >= adjustedFallSpeed) {
       this.moveDown();
       this.lastFallTime = now;
     }

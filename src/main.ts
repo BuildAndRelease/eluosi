@@ -24,7 +24,10 @@ const renderer = new Renderer(canvas, game);
 const soundManager = new SoundManager();
 const storageManager = new StorageManager();
 const animationManager = new AnimationManager();
-new InputHandler(game); // Keep reference to prevent garbage collection
+const inputHandler = new InputHandler(game);
+
+// Connect fast drop manager to game
+game.setFastDropManager(inputHandler.getFastDropManager());
 
 // Load persistent data
 const persistentData = storageManager.load();

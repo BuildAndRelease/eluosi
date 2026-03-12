@@ -90,28 +90,28 @@
 
 ### Tests for User Story 2 (TDD - Write First)
 
-- [ ] T027 [P] [US2] Write unit test for isometric coordinate transformation in tests/unit/3d-transforms.test.ts
-- [ ] T028 [P] [US2] Write unit test for face color calculation (top/left/right) in tests/unit/3d-transforms.test.ts
-- [ ] T029 [P] [US2] Write integration test for 3D grid rendering in tests/integration/3d-rendering.test.ts
-- [ ] T030 [P] [US2] Write integration test for 3D piece rendering in tests/integration/3d-rendering.test.ts
-- [ ] T031 [P] [US2] Write performance test for 200-block grid rendering <3ms in tests/integration/3d-rendering.test.ts
+- [X] T027 [P] [US2] Write unit test for isometric coordinate transformation in tests/unit/3d-transforms.test.ts
+- [X] T028 [P] [US2] Write unit test for face color calculation (top/left/right) in tests/unit/3d-transforms.test.ts
+- [X] T029 [P] [US2] Write integration test for 3D grid rendering in tests/integration/3d-rendering.test.ts
+- [X] T030 [P] [US2] Write integration test for 3D piece rendering in tests/integration/3d-rendering.test.ts
+- [X] T031 [P] [US2] Write performance test for 200-block grid rendering <3ms in tests/integration/3d-rendering.test.ts
 
 ### Implementation for User Story 2
 
-- [ ] T032 [P] [US2] Create Renderer3D class skeleton in src/render/Renderer3D.ts
-- [ ] T033 [P] [US2] Implement toIsometric() coordinate transformation in src/render/Renderer3D.ts
-- [ ] T034 [P] [US2] Implement calculateFaceColors() with brightness levels in src/render/Renderer3D.ts
-- [ ] T035 [US2] Implement drawTopFace() method in src/render/Renderer3D.ts
-- [ ] T036 [US2] Implement drawLeftFace() method in src/render/Renderer3D.ts
-- [ ] T037 [US2] Implement drawRightFace() method in src/render/Renderer3D.ts
-- [ ] T038 [US2] Implement renderBlock() with all three faces in src/render/Renderer3D.ts
-- [ ] T039 [US2] Implement renderGrid() with depth sorting in src/render/Renderer3D.ts
-- [ ] T040 [US2] Implement renderPiece() for falling pieces in src/render/Renderer3D.ts
-- [ ] T041 [US2] Add highlight and shadow effects in src/render/Renderer3D.ts
-- [ ] T042 [US2] Integrate Renderer3D into main Renderer in src/render/Renderer.ts
-- [ ] T043 [US2] Update 3D color schemes for 7 piece types in src/render/styles.ts
-- [ ] T044 [US2] Add gradient caching for performance in src/render/Renderer3D.ts
-- [ ] T045 [US2] Verify all US2 tests pass and achieve 80%+ coverage
+- [X] T032 [P] [US2] Create Renderer3D class skeleton in src/render/Renderer3D.ts
+- [X] T033 [P] [US2] Implement toIsometric() coordinate transformation in src/render/Renderer3D.ts
+- [X] T034 [P] [US2] Implement calculateFaceColors() with brightness levels in src/render/Renderer3D.ts
+- [X] T035 [US2] Implement drawTopFace() method in src/render/Renderer3D.ts
+- [X] T036 [US2] Implement drawLeftFace() method in src/render/Renderer3D.ts
+- [X] T037 [US2] Implement drawRightFace() method in src/render/Renderer3D.ts
+- [X] T038 [US2] Implement renderBlock() with all three faces in src/render/Renderer3D.ts
+- [X] T039 [US2] Implement renderGrid() with depth sorting in src/render/Renderer3D.ts
+- [X] T040 [US2] Implement renderPiece() for falling pieces in src/render/Renderer3D.ts
+- [X] T041 [US2] Add highlight and shadow effects in src/render/Renderer3D.ts
+- [X] T042 [US2] Integrate Renderer3D into main Renderer in src/render/Renderer.ts
+- [X] T043 [US2] Update 3D color schemes for 7 piece types in src/render/styles.ts
+- [X] T044 [US2] Add gradient caching for performance in src/render/Renderer3D.ts
+- [X] T045 [US2] Verify all US2 tests pass and achieve 80%+ coverage
 
 **Checkpoint**: At this point, User Stories 1 AND 2 should both work independently - particles + 3D blocks
 
@@ -125,23 +125,23 @@
 
 ### Tests for User Story 3 (TDD - Write First)
 
-- [ ] T046 [P] [US3] Write unit test for fast drop speed multiplier calculation in tests/unit/fast-drop.test.ts
-- [ ] T047 [P] [US3] Write unit test for linear acceleration curve in tests/unit/fast-drop.test.ts
-- [ ] T048 [P] [US3] Write integration test for spacebar activation/deactivation in tests/integration/fast-drop.test.ts
-- [ ] T049 [P] [US3] Write integration test for acceleration ramp-up timing in tests/integration/fast-drop.test.ts
-- [ ] T050 [P] [US3] Write performance test for <50ms input latency in tests/integration/fast-drop.test.ts
+- [X] T046 [P] [US3] Write unit test for fast drop speed multiplier calculation in tests/unit/fast-drop.test.ts
+- [X] T047 [P] [US3] Write unit test for linear acceleration curve in tests/unit/fast-drop.test.ts
+- [X] T048 [P] [US3] Write integration test for spacebar activation/deactivation in tests/integration/fast-drop.test.ts
+- [X] T049 [P] [US3] Write integration test for acceleration ramp-up timing in tests/integration/fast-drop.test.ts
+- [X] T050 [P] [US3] Write performance test for <50ms input latency in tests/integration/fast-drop.test.ts
 
 ### Implementation for User Story 3
 
-- [ ] T051 [P] [US3] Add FastDropState interface to src/input/InputHandler.ts
-- [ ] T052 [US3] Implement activateFastDrop() method in src/input/InputHandler.ts
-- [ ] T053 [US3] Implement deactivateFastDrop() method in src/input/InputHandler.ts
-- [ ] T054 [US3] Implement getSpeedMultiplier() with linear interpolation in src/input/InputHandler.ts
-- [ ] T055 [US3] Add spacebar keydown event listener in src/input/InputHandler.ts
-- [ ] T056 [US3] Add spacebar keyup event listener in src/input/InputHandler.ts
-- [ ] T057 [US3] Integrate speed multiplier into Game.update() drop timing in src/game/Game.ts
-- [ ] T058 [US3] Add optional motion blur trail effect in src/render/Renderer.ts
-- [ ] T059 [US3] Verify all US3 tests pass and achieve 80%+ coverage
+- [X] T051 [P] [US3] Add FastDropState interface to src/input/InputHandler.ts
+- [X] T052 [US3] Implement activateFastDrop() method in src/input/InputHandler.ts
+- [X] T053 [US3] Implement deactivateFastDrop() method in src/input/InputHandler.ts
+- [X] T054 [US3] Implement getSpeedMultiplier() with linear interpolation in src/input/InputHandler.ts
+- [X] T055 [US3] Add spacebar keydown event listener in src/input/InputHandler.ts
+- [X] T056 [US3] Add spacebar keyup event listener in src/input/InputHandler.ts
+- [X] T057 [US3] Integrate speed multiplier into Game.update() drop timing in src/game/Game.ts
+- [X] T058 [US3] Add optional motion blur trail effect in src/render/Renderer.ts
+- [X] T059 [US3] Verify all US3 tests pass and achieve 80%+ coverage
 
 **Checkpoint**: All user stories should now be independently functional - particles + 3D + fast drop
 

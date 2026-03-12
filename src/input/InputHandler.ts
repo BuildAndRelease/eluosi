@@ -2,22 +2,32 @@
  * Input Handler
  *
  * Manages keyboard input and maps keys to game actions.
+ * Handles fast drop acceleration with spacebar press/release.
  */
 
 import type { GameAPI } from '../game/types';
+import { FastDropManager } from '../utils/FastDropManager';
 
 export class InputHandler {
   private game: GameAPI;
   private keydownHandler: (e: KeyboardEvent) => void;
+  private keyupHandler: (e: KeyboardEvent) => void;
+  private fastDropManager: FastDropManager;
 
   constructor(game: GameAPI) {
     this.game = game;
+    this.fastDropManager = new FastDropManager();
 
     this.keydownHandler = (e: KeyboardEvent) => {
       this.handleKeydown(e);
     };
 
+    this.keyupHandler = (e: KeyboardEvent) => {
+      this.handleKeyup(e);
+    };
+
     document.addEventListener('keydown', this.keydownHandler);
+    document.addEventListener('keyup', this.keyupHandler);
   }
 
   /**
@@ -25,6 +35,14 @@ export class InputHandler {
    */
   public destroy(): void {
     document.removeEventListener('keydown', this.keydownHandler);
+    document.removeEventListener('keyup', this.keyupHandler);
+  }
+
+  /**
+   * Get fast drop manager instance for game loop integration
+   */
+  public getFastDropManager(): FastDropManager {
+    return this.fastDropManager;
   }
 
   private handleKeydown(e: KeyboardEvent): void {
@@ -58,7 +76,8 @@ export class InputHandler {
 
       case ' ':
         e.preventDefault();
-        this.game.hardDrop();
+        // Activate fast drop on spacebar press
+        this.fastDropManager.activate();
         break;
 
       case 'p':
@@ -78,6 +97,23 @@ export class InputHandler {
           this.game.reset();
           this.game.start();
         }
+        break;
+    }
+  }
+
+  private handleKeyup(e: KeyboardEvent): void {
+    const state = this.game.getGameState();
+
+    // Ignore input if not playing
+    if (state.status !== 'playing') {
+      return;
+    }
+
+    switch (e.key) {
+      case ' ':
+        e.preventDefault();
+        // Deactivate fast drop on spacebar release
+        this.fastDropManager.deactivate();
         break;
     }
   }
