@@ -79,7 +79,7 @@ export function getCompleteRows(grid: Grid): number[] {
  * Shift rows down after clearing lines
  *
  * @param grid - The grid
- * @param clearedRows - Sorted array of cleared row indices
+ * @param clearedRows - Array of cleared row indices (can be unsorted)
  * @returns New grid with rows shifted down
  */
 export function shiftRowsDown(grid: Grid, clearedRows: number[]): Grid {
@@ -87,17 +87,19 @@ export function shiftRowsDown(grid: Grid, clearedRows: number[]): Grid {
     return grid;
   }
 
-  const newCells = [...grid.cells];
+  // Create a set for O(1) lookup
+  const clearedRowSet = new Set(clearedRows);
 
-  // Sort in descending order to process from bottom to top
-  const sortedRows = [...clearedRows].sort((a, b) => b - a);
+  // Filter out cleared rows and keep remaining rows
+  const remainingRows = grid.cells.filter((_, index) => !clearedRowSet.has(index));
 
-  for (const clearedRow of sortedRows) {
-    // Remove cleared row
-    newCells.splice(clearedRow, 1);
-    // Add empty row at top
-    newCells.unshift(Array(GRID_WIDTH).fill(null));
-  }
+  // Add empty rows at the top (equal to number of cleared rows)
+  const emptyRows = Array(clearedRows.length)
+    .fill(null)
+    .map(() => Array(GRID_WIDTH).fill(null));
+
+  // Combine empty rows at top with remaining rows
+  const newCells = [...emptyRows, ...remainingRows];
 
   return {
     ...grid,
