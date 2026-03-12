@@ -22,7 +22,7 @@ export class Game implements GameAPI {
   // Event callbacks
   public onScoreChange?: (score: number) => void;
   public onLevelChange?: (level: number) => void;
-  public onLinesClear?: (count: number) => void;
+  public onLinesClear?: (count: number, rows: number[], gridColors: (string | null)[][]) => void;
   public onGameOver?: (finalScore: number) => void;
   public onStateChange?: (newState: GameStatus) => void;
 
@@ -230,6 +230,9 @@ export class Game implements GameAPI {
     const completeRows = getCompleteRows(newGrid);
 
     if (completeRows.length > 0) {
+      // Store grid colors before clearing for particle effects
+      const gridColors = newGrid.cells;
+
       // Clear rows and shift down
       newGrid = shiftRowsDown(newGrid, completeRows);
 
@@ -246,7 +249,7 @@ export class Game implements GameAPI {
         level: newLevel,
       };
 
-      this.onLinesClear?.(completeRows.length);
+      this.onLinesClear?.(completeRows.length, completeRows, gridColors);
       this.onScoreChange?.(newScore);
 
       if (newLevel > this.state.level) {

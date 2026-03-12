@@ -110,7 +110,7 @@ export interface GameAPI {
   // Event callbacks (optional)
   onScoreChange?: (score: number) => void;
   onLevelChange?: (level: number) => void;
-  onLinesClear?: (count: number) => void;
+  onLinesClear?: (count: number, rows: number[], gridColors: (string | null)[][]) => void;
   onGameOver?: (finalScore: number) => void;
   onStateChange?: (newState: GameStatus) => void;
 }

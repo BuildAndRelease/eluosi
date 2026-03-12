@@ -9,6 +9,7 @@ import { Renderer } from './render/Renderer';
 import { InputHandler } from './input/InputHandler';
 import { SoundManager } from './audio/SoundManager';
 import { StorageManager } from './storage/StorageManager';
+import { AnimationManager } from './utils/AnimationManager';
 
 // Get Canvas element
 const canvas = document.getElementById('game-canvas') as HTMLCanvasElement | null;
@@ -22,6 +23,7 @@ const game = new Game();
 const renderer = new Renderer(canvas, game);
 const soundManager = new SoundManager();
 const storageManager = new StorageManager();
+const animationManager = new AnimationManager();
 new InputHandler(game); // Keep reference to prevent garbage collection
 
 // Load persistent data
@@ -42,9 +44,11 @@ document.addEventListener('keydown', initAudio, { once: true });
 document.addEventListener('click', initAudio, { once: true });
 
 // Connect game events to sound effects
-game.onLinesClear = (count) => {
+game.onLinesClear = (count, rows, gridColors) => {
   soundManager.play('clear');
   storageManager.addLines(count);
+  // Trigger particle explosions
+  renderer.triggerLineClearAnimation(rows, gridColors);
 };
 
 game.onGameOver = (finalScore) => {
@@ -53,17 +57,45 @@ game.onGameOver = (finalScore) => {
   storageManager.incrementGames();
 };
 
-game.onLinesClear = (count) => {
+game.onLinesClear = (count, rows, gridColors) => {
   soundManager.play('clear');
   storageManager.addLines(count);
+  // Trigger particle explosions
+  renderer.triggerLineClearAnimation(rows, gridColors);
 };
+
+// Performance monitoring
+let frameCount = 0;
+let lastFpsUpdate = performance.now();
+let currentFps = 60;
 
 // Game loop
 function gameLoop(): void {
+  const currentTime = performance.now();
+
+  // Update FPS counter every second
+  frameCount++;
+  if (currentTime - lastFpsUpdate >= 1000) {
+    currentFps = frameCount;
+    frameCount = 0;
+    lastFpsUpdate = currentTime;
+  }
+
+  // Update animations
+  animationManager.update(currentTime);
+
+  // Render game state
   const state = game.getGameState();
   renderer.render(state);
+
   requestAnimationFrame(gameLoop);
 }
+
+// Expose performance metrics for debugging
+(window as any).getPerformanceMetrics = () => ({
+  fps: currentFps,
+  activeAnimations: animationManager.getActiveCount(),
+});
 
 // Start rendering loop
 gameLoop();

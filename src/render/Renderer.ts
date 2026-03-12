@@ -8,6 +8,7 @@
 import type { GameState, Piece, Grid, GameAPI } from '../game/types';
 import { CELL_SIZE, GRID_WIDTH, GRID_HEIGHT, ANIMATION_DURATIONS } from '../config/constants';
 import { createMetallicGradient, addHighlight, addShadow } from './metallic-effects';
+import { EffectsManager } from './Effects';
 
 // Canvas layout constants
 const SIDEBAR_WIDTH = 150;
@@ -21,6 +22,7 @@ export class Renderer {
   private ctx: CanvasRenderingContext2D;
   private canvas: HTMLCanvasElement;
   private game: GameAPI | null = null;
+  private effectsManager: EffectsManager;
 
   // Animation state
   private clearingRows: number[] = [];
@@ -42,6 +44,7 @@ export class Renderer {
     }
 
     this.ctx = ctx;
+    this.effectsManager = new EffectsManager(ctx, CELL_SIZE);
   }
 
   /** Set game reference for high score display */
@@ -88,6 +91,10 @@ export class Renderer {
       }
     }
 
+    // Update and render particle effects
+    this.effectsManager.update(performance.now());
+    this.effectsManager.render();
+
     this.renderSidebar(state);
 
     // Render overlay for paused/gameover states
@@ -95,6 +102,8 @@ export class Renderer {
       this.renderPauseOverlay();
     } else if (state.status === 'gameover') {
       this.renderGameOverOverlay(state.score);
+      // Stop all particle animations on game over
+      this.effectsManager.stopAll();
     } else if (state.status === 'menu') {
       this.renderMenuOverlay();
     }
@@ -188,15 +197,23 @@ export class Renderer {
   }
 
   /** Trigger line clear animation */
-  public triggerLineClearAnimation(rows: number[]): void {
+  public triggerLineClearAnimation(rows: number[], gridColors: (string | null)[][]): void {
     this.clearingRows = rows;
     this.clearAnimationStart = Date.now();
+
+    // Trigger particle explosions for cleared rows
+    this.effectsManager.createMultiRowExplosion(rows, gridColors);
   }
 
   /** Trigger block lock flash */
   public triggerLockFlash(piece: Piece): void {
     this.lockFlashPiece = piece;
     this.lockFlashStart = Date.now();
+  }
+
+  /** Get effects manager for external access */
+  public getEffectsManager(): EffectsManager {
+    return this.effectsManager;
   }
 
   /** Render metallic block with gradient, highlight, and shadow */

@@ -1,0 +1,148 @@
+# Implementation Plan: Tetris 3D Visual Enhancements
+
+**Branch**: `002-3d-visual-enhancements` | **Date**: 2026-03-12 | **Spec**: [spec.md](./spec.md)
+**Input**: Feature specification from `/specs/002-3d-visual-enhancements/spec.md`
+
+## Summary
+
+Enhance the existing Tetris game with 3D visual effects, particle explosion animations for row clearing, and improved fast drop control. The feature builds on V1's core game logic while upgrading the rendering system to provide depth perception through isometric 3D block rendering, physics-based particle effects, and smooth linear acceleration for fast drops. Target performance: 60 FPS with <50ms input latency maintained.
+
+## Technical Context
+
+**Language/Version**: TypeScript 5.6 (strict mode enabled)
+**Primary Dependencies**: ZERO runtime dependencies (Vite 6.0 for build only)
+**Storage**: localStorage (game state persistence)
+**Testing**: Vitest 4.0.18 with @vitest/coverage-v8
+**Target Platform**: Modern browsers (Chrome 90+, Firefox 88+, Safari 14+, Edge 90+)
+**Project Type**: Browser-based game (pure frontend, zero backend)
+**Performance Goals**: 60 FPS stable, <50ms input latency, particle system with 100+ concurrent particles
+**Constraints**: <80MB memory, 0.5-1.0s animation duration, zero runtime dependencies
+**Scale/Scope**: Single-player game, 10×20 grid, 7 piece types, isometric 3D rendering with 3 faces per block
+
+## Constitution Check
+
+*GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
+
+### Code Quality Standards
+- ✅ **Code Simplicity**: 3D rendering will be minimal Canvas 2D API usage, no complex 3D math libraries
+- ✅ **Detailed Comments**: All 3D transformation logic and particle physics will be documented
+- ✅ **Immutability**: Particle state managed immutably, no mutation of game state
+- ✅ **File Organization**: New files under 400 lines (Renderer3D.ts, Effects.ts, AnimationManager.ts)
+- ✅ **Error Handling**: Graceful degradation if Canvas performance insufficient
+- ✅ **Input Validation**: Fast drop acceleration parameters validated
+- ✅ **Code Readability**: 3D rendering functions <50 lines each
+
+### Testing Standards
+- ✅ **TDD Workflow**: Tests for particle physics, 3D coordinate transforms, animation timing
+- ✅ **Test Types**: Unit (particle system), Integration (animation + rendering), Visual regression (3D appearance)
+- ✅ **Coverage**: 80%+ for new animation and 3D rendering logic
+- ✅ **Performance Testing**: 60fps verified with 100+ particles active
+
+### User Experience Consistency
+- ✅ **Instant Response**: Fast drop acceleration starts within <50ms of spacebar press
+- ✅ **Visual Consistency**: 60fps maintained during particle explosions
+- ✅ **Intuitive Controls**: Spacebar behavior enhanced (linear acceleration vs instant drop)
+- ✅ **Clear Feedback**: Particle explosions provide satisfying visual feedback
+- ✅ **Loading States**: No additional assets, no load time impact
+
+### Performance Requirements
+- ✅ **Frame Rate**: 60fps target with particle system active
+- ✅ **Input Latency**: <50ms for fast drop activation
+- ✅ **Load Time**: No change (no new assets)
+- ✅ **Memory Usage**: <80MB with particle object pool
+- ✅ **Resource Efficiency**: Particle rendering optimized with object pooling
+
+### TypeScript & Dependency Management
+- ✅ **TypeScript First**: All new code in TypeScript strict mode
+- ✅ **Strict Type Checking**: No `any` types except Canvas API interfaces
+- ✅ **Zero Runtime Dependencies**: Pure Canvas 2D API for 3D effects
+- ✅ **Dev Dependencies Only**: No new dependencies required
+
+### Technical Constraints
+- ✅ **MUST Use**: HTML5 Canvas (2D context for isometric 3D), Web Audio API (existing), localStorage (existing), Vite (existing)
+- ✅ **MUST NOT Use**: No 3D libraries (Three.js, PixiJS), no frameworks, no external dependencies
+- ✅ **Browser Compatibility**: Chrome 90+, Firefox 88+, Safari 14+, Edge 90+
+
+### Design Principles
+- ⚠️ **Metallic Visual Style**: V2 adds 3D depth to existing metallic aesthetic
+- ✅ **Audio Immersion**: Existing sound system unchanged
+- ✅ **Minimalist Interface**: UI layout unchanged, only visual depth added
+- ✅ **Visual Feedback**: Particle explosions enhance existing feedback
+
+### Quality Gates
+- ✅ All gates applicable and will be verified during implementation
+
+**Gate Status**: ✅ PASSED - No constitution violations. Feature aligns with zero-dependency, performance-first, TypeScript-strict principles.
+
+## Project Structure
+
+### Documentation (this feature)
+
+```text
+specs/002-3d-visual-enhancements/
+├── plan.md              # This file
+├── research.md          # Phase 0: 3D rendering techniques, particle systems
+├── data-model.md        # Phase 1: Particle, Animation state models
+├── quickstart.md        # Phase 1: Developer guide for 3D rendering system
+├── contracts/           # Phase 1: Renderer3D API, Effects API
+│   ├── renderer3d-api.md
+│   └── effects-api.md
+└── tasks.md             # Phase 2: Implementation tasks (generated by /speckit.tasks)
+```
+
+### Source Code (repository root)
+
+```text
+src/
+├── game/                # V1 core logic (UNCHANGED)
+│   ├── Game.ts
+│   ├── types.ts
+│   ├── collision.ts
+│   ├── piece-shapes.ts
+│   ├── piece-factory.ts
+│   ├── grid.ts
+│   └── rotation.ts
+├── render/              # Rendering system (MODIFIED + NEW)
+│   ├── Renderer.ts      # MODIFIED: Integrate 3D rendering
+│   ├── Renderer3D.ts    # NEW: Isometric 3D block rendering
+│   ├── Effects.ts       # NEW: Particle explosion system
+│   ├── metallic-effects.ts  # V1 (UNCHANGED)
+│   └── styles.ts        # MODIFIED: 3D color schemes
+├── input/               # Input handling (MODIFIED)
+│   └── InputHandler.ts  # MODIFIED: Fast drop linear acceleration
+├── utils/               # Utilities (NEW)
+│   └── AnimationManager.ts  # NEW: Animation lifecycle management
+├── audio/               # V1 (UNCHANGED)
+│   └── SoundManager.ts
+├── storage/             # V1 (UNCHANGED)
+│   └── StorageManager.ts
+├── config/              # V1 (UNCHANGED)
+│   └── constants.ts
+└── main.ts              # V1 (UNCHANGED)
+
+tests/
+├── unit/
+│   ├── particle-system.test.ts      # NEW
+│   ├── 3d-transforms.test.ts        # NEW
+│   ├── animation-manager.test.ts    # NEW
+│   └── fast-drop.test.ts            # NEW
+├── integration/
+│   ├── 3d-rendering.test.ts         # NEW
+│   └── particle-animation.test.ts   # NEW
+└── visual/
+    └── 3d-appearance.test.ts        # NEW (optional)
+```
+
+**Structure Decision**: Single project structure maintained from V1. New rendering modules added under `src/render/` and `src/utils/`. Core game logic in `src/game/` remains untouched, preserving V1 stability. Testing structure mirrors source organization.
+
+## Complexity Tracking
+
+> **No constitution violations - this section intentionally left empty**
+
+All design decisions align with constitution principles:
+- Zero runtime dependencies maintained
+- Performance targets achievable with Canvas 2D API
+- File sizes within limits (<400 lines per file)
+- TDD workflow applicable to all new logic
+- No framework or library additions required
+
