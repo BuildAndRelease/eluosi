@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Eluosi - Metallic Tetris</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'Arial', sans-serif;
+        background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        color: #e0e0e0;
+      }
+
+      #app {
+        text-align: center;
+      }
+
+      h1 {
+        font-size: 3rem;
+        margin-bottom: 2rem;
+        background: linear-gradient(135deg, #c0c0c0 0%, #808080 50%, #c0c0c0 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      }
+
+      #game-canvas {
+        border: 3px solid #808080;
+        border-radius: 8px;
+        box-shadow:
+          0 0 20px rgba(192, 192, 192, 0.3),
+          inset 0 0 10px rgba(0, 0, 0, 0.5);
+        background: #1a1a1a;
+      }
+
+      .metallic-border {
+        padding: 20px;
+        background: linear-gradient(135deg, #3a3a3a 0%, #2a2a2a 50%, #3a3a3a 100%);
+        border-radius: 12px;
+        box-shadow:
+          0 4px 6px rgba(0, 0, 0, 0.3),
+          inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <h1>俄罗斯方块</h1>
+      <div class="metallic-border">
+        <canvas id="game-canvas" width="300" height="600"></canvas>
+      </div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

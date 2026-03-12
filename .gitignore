@@ -3,13 +3,14 @@ node_modules/
 
 # Build output
 dist/
+build/
 
-# Environment variables
-.env
-.env.local
-.env*.local
+# Testing
+coverage/
+*.test.ts.snap
+.vitest/
 
-# IDE
+# Editor
 .vscode/
 .idea/
 *.swp
@@ -32,4 +33,6 @@ coverage/
 
 # Temporary files
 *.tmp
+pnpm-debug.log*
+*.temp
 .cache/
