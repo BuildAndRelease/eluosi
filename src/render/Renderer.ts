@@ -1,13 +1,13 @@
 /**
  * Canvas Renderer
  *
- * Handles all Canvas rendering including grid, pieces, metallic effects,
+ * Handles all Canvas rendering including grid, pieces, glassmorphism effects,
  * animations, and UI elements (score, level, next piece preview).
  */
 
 import type { GameState, Piece, Grid, GameAPI } from '../game/types';
 import { CELL_SIZE, GRID_WIDTH, GRID_HEIGHT, ANIMATION_DURATIONS } from '../config/constants';
-import { createMetallicGradient, addHighlight, addShadow } from './metallic-effects';
+import { GlassRenderer } from './GlassRenderer';
 import { EffectsManager } from './Effects';
 
 // Canvas layout constants
