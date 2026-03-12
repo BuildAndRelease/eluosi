@@ -108,7 +108,7 @@ Players interact with a cohesive futuristic interface design that creates an imm
 ## Assumptions
 
 - Glass texture effects refer to semi-transparent appearance with light refraction, not actual 3D glass modeling
-- Gaussian blur for frosted effect can be achieved with CSS backdrop-filter or Canvas blur operations
+- Gaussian blur for frosted effect is achieved with CSS backdrop-filter (primary approach). Canvas blur operations are only used as fallback if backdrop-filter is unsupported.
 - Light blue to deep purple gradient represents "tech-inspired" aesthetic (cyberpunk/futuristic style)
 - 2x speed for down arrow is fast enough for skilled play but slow enough to maintain control
 - Instant drop (spacebar) means immediate placement at lowest valid position, not animated fast fall
@@ -121,7 +121,7 @@ Players interact with a cohesive futuristic interface design that creates an imm
 - Existing Tetris game implementation (001-core-tetris-game, 002-3d-visual-enhancements)
 - Current input handling system for keyboard controls
 - Existing rendering pipeline for blocks and game board
-- Canvas 2D API or CSS capabilities for blur and transparency effects
+- CSS capabilities for blur and transparency effects (backdrop-filter, box-shadow, gradients)
 
 ## Out of Scope
 

@@ -61,10 +61,11 @@
 - [ ] T013 [P] [US1] Write integration test for down arrow keydown/keyup in tests/integration/controls.test.ts
 - [ ] T014 [P] [US1] Write integration test for spacebar instant drop in tests/integration/controls.test.ts
 - [ ] T015 [P] [US1] Write performance test for <50ms input latency in tests/integration/controls.test.ts
+- [ ] T015a [P] [US1] Write integration test for rapid key switching (down arrow ↔ spacebar) in tests/integration/controls.test.ts
 
 ### Implementation for User Story 1
 
-- [ ] T016 [US1] Modify InputHandler to handle down arrow for 2x speed in src/input/InputHandler.ts
+- [ ] T016 [US1] Modify InputHandler to handle down arrow for 2x speed (including rapid switching edge case) in src/input/InputHandler.ts
 - [ ] T017 [US1] Modify InputHandler to handle spacebar for instant drop in src/input/InputHandler.ts
 - [ ] T018 [US1] Remove existing fast drop acceleration (spacebar hold) from FastDropManager in src/utils/FastDropManager.ts
 - [ ] T019 [US1] Update Game loop to apply 2x multiplier for down arrow in src/game/Game.ts
@@ -158,13 +159,13 @@
 
 ## Task Summary
 
-- **Total Tasks**: 55
+- **Total Tasks**: 56
 - **Setup Phase**: 4 tasks
 - **Foundational Phase**: 6 tasks (BLOCKING)
-- **User Story 1 (P1)**: 12 tasks (5 tests + 7 implementation)
+- **User Story 1 (P1)**: 13 tasks (6 tests + 7 implementation)
 - **User Story 2 (P2)**: 18 tasks (5 tests + 13 implementation)
 - **Integration & Polish**: 15 tasks
-- **Parallel Opportunities**: 28 tasks marked [P]
+- **Parallel Opportunities**: 29 tasks marked [P]
 
 ---
 
