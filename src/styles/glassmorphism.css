@@ -1,0 +1,158 @@
+/**
+ * Glassmorphism Visual Styles
+ *
+ * Modern glass-effect styling for Tetris game with:
+ * - Gradient background (light blue to deep purple)
+ * - Frosted glass borders with backdrop blur
+ * - Semi-transparent glass block textures
+ * - Tech-inspired design elements
+ */
+
+/* Reset and base styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', 'Segoe UI', 'Arial', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Gradient background with blur circles */
+.gradient-background {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(135deg, #e0f2fe 0%, #581c87 100%);
+}
+
+.gradient-background::before,
+.gradient-background::after,
+.gradient-background .blur-circle {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: 0.3;
+}
+
+/* Top-left light blue blur */
+.gradient-background::before {
+  top: -10%;
+  left: -10%;
+  width: 40%;
+  height: 40%;
+  background: #6366f1; /* indigo-600 */
+  filter: blur(100px);
+}
+
+/* Bottom-right deep purple blur */
+.gradient-background::after {
+  bottom: -10%;
+  right: -10%;
+  width: 50%;
+  height: 50%;
+  background: #c026d3; /* fuchsia-600 */
+  filter: blur(120px);
+}
+
+/* Middle cyan blur */
+.blur-circle {
+  top: 40%;
+  left: 60%;
+  width: 30%;
+  height: 30%;
+  background: #0891b2; /* cyan-600 */
+  filter: blur(90px);
+  opacity: 0.2;
+}
+
+/* Main app container */
+#app {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  z-index: 1;
+}
+
+/* Title styling */
+h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: white;
+  text-shadow:
+    0 0 20px rgba(255, 255, 255, 0.5),
+    0 0 40px rgba(99, 102, 241, 0.3);
+  letter-spacing: 0.05em;
+}
+
+/* Frosted glass game board container */
+.glass-container {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 1.5rem;
+  padding: 1.5rem;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.1),
+    0 0 0 1px rgba(255, 255, 255, 0.1) inset,
+    0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+/* Fallback for browsers without backdrop-filter support */
+@supports not (backdrop-filter: blur(16px)) {
+  .glass-container {
+    background: rgba(255, 255, 255, 0.15);
+  }
+}
+
+/* Canvas styling */
+#game-canvas {
+  display: block;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Glass block styles (applied via Canvas rendering) */
+.glass-block {
+  /* These are reference styles for Canvas implementation */
+  /* Actual rendering done in TypeScript with matching visual properties */
+  background: rgba(255, 255, 255, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.7);
+  box-shadow:
+    inset 1px 1px 4px rgba(255, 255, 255, 0.8),
+    inset -1px -1px 4px rgba(0, 0, 0, 0.4),
+    0 0 12px rgba(255, 255, 255, 0.5);
+}
+
+/* Tech-inspired UI elements */
+.tech-glow {
+  text-shadow: 0 0 10px currentColor;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  h1 {
+    font-size: 2rem;
+  }
+
+  .glass-container {
+    padding: 1rem;
+  }
+}
+
+/* Performance optimization */
+.gradient-background,
+.glass-container {
+  will-change: transform;
+  transform: translateZ(0);
+}
