@@ -60,13 +60,6 @@ game.onGameOver = (finalScore) => {
   storageManager.incrementGames();
 };
 
-game.onLinesClear = (count, rows, gridColors) => {
-  soundManager.play('clear');
-  storageManager.addLines(count);
-  // Trigger particle explosions
-  renderer.triggerLineClearAnimation(rows, gridColors);
-};
-
 // Performance monitoring
 let frameCount = 0;
 let lastFpsUpdate = performance.now();
@@ -107,6 +100,6 @@ gameLoop();
 game.start();
 
 console.log('Eluosi initialized - Game ready');
-console.log('Controls: Arrow keys to move, Space to hard drop, P to pause, R to restart');
+console.log('Controls: Arrow keys to move, Space for fast drop (hold), P to pause, R to restart');
 console.log(`High Score: ${persistentData.highScore}`);
 

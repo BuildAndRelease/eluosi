@@ -151,23 +151,23 @@
 
 **Purpose**: Ensure all three user stories work together seamlessly and meet performance targets
 
-- [ ] T060 [P] Integration test: Particle explosions with 3D blocks in tests/integration/full-integration.test.ts
-- [ ] T061 [P] Integration test: Fast drop with 3D rendering in tests/integration/full-integration.test.ts
-- [ ] T062 [P] Integration test: All three features together in tests/integration/full-integration.test.ts
-- [ ] T063 Performance validation: 60fps with all features active
-- [ ] T064 Performance validation: <50ms input latency for fast drop
-- [ ] T065 Performance validation: Memory usage <80MB after 10 minutes gameplay
-- [ ] T066 [P] Edge case: Game over interrupts particle animation correctly
-- [ ] T067 [P] Edge case: Multiple simultaneous row clears work correctly
-- [ ] T068 [P] Edge case: Fast drop repeated presses handled correctly
-- [ ] T069 Code cleanup and refactoring for maintainability
-- [ ] T070 [P] Update quickstart.md with usage examples
-- [ ] T071 [P] Add inline documentation comments per constitution
-- [ ] T072 Run full test suite and verify 80%+ coverage
-- [ ] T073 Browser compatibility testing (Chrome, Firefox, Safari, Edge)
-- [ ] T074 Visual regression testing (optional - compare 3D appearance)
-- [ ] T075 Visual validation against reference image (https://pic.rmb.bdstatic.com/bjh/bb919506478d/250619/302dd43e59f5e31433d45464b21c3bb2.jpeg?for=bg)
-- [ ] T076 Final performance profiling and optimization
+- [X] T060 [P] Integration test: Particle explosions with 3D blocks in tests/integration/full-integration.test.ts
+- [X] T061 [P] Integration test: Fast drop with 3D rendering in tests/integration/full-integration.test.ts
+- [X] T062 [P] Integration test: All three features together in tests/integration/full-integration.test.ts
+- [X] T063 Performance validation: 60fps with all features active
+- [X] T064 Performance validation: <50ms input latency for fast drop
+- [X] T065 Performance validation: Memory usage <80MB after 10 minutes gameplay
+- [X] T066 [P] Edge case: Game over interrupts particle animation correctly
+- [X] T067 [P] Edge case: Multiple simultaneous row clears work correctly
+- [X] T068 [P] Edge case: Fast drop repeated presses handled correctly
+- [X] T069 Code cleanup and refactoring for maintainability
+- [X] T070 [P] Update quickstart.md with usage examples
+- [X] T071 [P] Add inline documentation comments per constitution
+- [X] T072 Run full test suite and verify 80%+ coverage
+- [X] T073 Browser compatibility testing (Chrome, Firefox, Safari, Edge)
+- [X] T074 Visual regression testing (optional - compare 3D appearance)
+- [X] T075 Visual validation against reference image
+- [X] T076 Final performance profiling and optimization
 
 **Note**: SC-005 (90% player approval) is a post-launch metric requiring user testing after deployment. Not included in pre-launch tasks.
 
