@@ -10,6 +10,7 @@ import { InputHandler } from './input/InputHandler';
 import { SoundManager } from './audio/SoundManager';
 import { StorageManager } from './storage/StorageManager';
 import { AnimationManager } from './utils/AnimationManager';
+import { PerformanceMonitor } from './utils/PerformanceMonitor';
 
 // Get Canvas element
 const canvas = document.getElementById('game-canvas') as HTMLCanvasElement | null;
@@ -25,9 +26,7 @@ const soundManager = new SoundManager();
 const storageManager = new StorageManager();
 const animationManager = new AnimationManager();
 const inputHandler = new InputHandler(game);
-
-// Connect fast drop manager to game
-game.setFastDropManager(inputHandler.getFastDropManager());
+const performanceMonitor = new PerformanceMonitor();
 
 // Load persistent data
 const persistentData = storageManager.load();
@@ -60,38 +59,31 @@ game.onGameOver = (finalScore) => {
   storageManager.incrementGames();
 };
 
-// Performance monitoring
-let frameCount = 0;
-let lastFpsUpdate = performance.now();
-let currentFps = 60;
-
 // Game loop
 function gameLoop(): void {
   const currentTime = performance.now();
 
-  // Update FPS counter every second
-  frameCount++;
-  if (currentTime - lastFpsUpdate >= 1000) {
-    currentFps = frameCount;
-    frameCount = 0;
-    lastFpsUpdate = currentTime;
-  }
+  // Update performance monitor
+  performanceMonitor.update();
+
+  // Update speed multiplier from input handler
+  game.setSpeedMultiplier(inputHandler.getSpeedMultiplier());
 
   // Update animations
   animationManager.update(currentTime);
 
-  // Render game state
+  // Measure render performance
+  performanceMonitor.startRenderMeasure();
   const state = game.getGameState();
   renderer.render(state);
+  performanceMonitor.endRenderMeasure();
 
   requestAnimationFrame(gameLoop);
 }
 
 // Expose performance metrics for debugging
-(window as any).getPerformanceMetrics = () => ({
-  fps: currentFps,
-  activeAnimations: animationManager.getActiveCount(),
-});
+(window as any).getPerformanceMetrics = () => performanceMonitor.getMetrics();
+(window as any).getPerformanceReport = () => performanceMonitor.getReport();
 
 // Start rendering loop
 gameLoop();
@@ -100,6 +92,6 @@ gameLoop();
 game.start();
 
 console.log('Eluosi initialized - Game ready');
-console.log('Controls: Arrow keys to move, Space for fast drop (hold), P to pause, R to restart');
+console.log('Controls: Arrow keys to move, Down arrow for 2x speed, Space for instant drop, P to pause, R to restart');
 console.log(`High Score: ${persistentData.highScore}`);
 

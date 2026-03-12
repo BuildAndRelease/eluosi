@@ -1,0 +1,16 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+build/
+
+# Testing
+coverage/
+.vitest/
+
+# Configuration files
+*.config.js
+*.config.ts
+vite.config.*
+vitest.config.*

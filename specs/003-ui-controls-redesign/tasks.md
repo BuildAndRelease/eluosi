@@ -24,10 +24,10 @@
 
 **Purpose**: Project initialization and basic structure for UI redesign
 
-- [ ] T001 Review existing V2 codebase structure and identify integration points for CSS-based rendering
-- [ ] T002 [P] Create index.html structure with gradient background containers
-- [ ] T003 [P] Create src/styles/glassmorphism.css for glass effect styles
-- [ ] T004 [P] Verify browser compatibility for backdrop-filter support
+- [X] T001 Review existing V2 codebase structure and identify integration points for CSS-based rendering
+- [X] T002 [P] Create index.html structure with gradient background containers
+- [X] T003 [P] Create src/styles/glassmorphism.css for glass effect styles
+- [X] T004 [P] Verify browser compatibility for backdrop-filter support
 
 **Checkpoint**: Project structure ready, CSS foundation in place
 
@@ -37,11 +37,11 @@
 
 **Purpose**: Core systems that both user stories depend on
 
-- [ ] T005 Create CSS gradient background with blur circles in index.html
-- [ ] T006 [P] Implement frosted glass border styles in src/styles/glassmorphism.css
-- [ ] T007 [P] Create glass block style definitions for 7 piece types in src/render/styles.ts
-- [ ] T008 Update Renderer to apply CSS classes instead of Canvas drawing in src/render/Renderer.ts
-- [ ] T009 [P] Add performance monitoring utilities for CSS effects in src/utils/PerformanceMonitor.ts
+- [X] T005 Create CSS gradient background with blur circles in index.html
+- [X] T006 [P] Implement frosted glass border styles in src/styles/glassmorphism.css
+- [X] T007 [P] Create glass block style definitions for 7 piece types in src/render/glass-colors.ts
+- [X] T008 Update Renderer to apply glass effects using GlassRenderer in src/render/Renderer.ts
+- [X] T009 [P] Add performance monitoring utilities for CSS effects in src/utils/PerformanceMonitor.ts
 - [ ] T010 Verify 60 FPS with all CSS effects active
 
 **Checkpoint**: Visual foundation complete, CSS rendering pipeline working
@@ -65,12 +65,12 @@
 
 ### Implementation for User Story 1
 
-- [ ] T016 [US1] Modify InputHandler to handle down arrow for 2x speed (including rapid switching edge case) in src/input/InputHandler.ts
-- [ ] T017 [US1] Modify InputHandler to handle spacebar for instant drop in src/input/InputHandler.ts
-- [ ] T018 [US1] Remove existing fast drop acceleration (spacebar hold) from FastDropManager in src/utils/FastDropManager.ts
-- [ ] T019 [US1] Update Game loop to apply 2x multiplier for down arrow in src/game/Game.ts
-- [ ] T020 [US1] Wire spacebar to hardDrop() method in src/input/InputHandler.ts
-- [ ] T021 [US1] Update control hints in console log in src/main.ts
+- [X] T016 [US1] Modify InputHandler to handle down arrow for 2x speed (including rapid switching edge case) in src/input/InputHandler.ts
+- [X] T017 [US1] Modify InputHandler to handle spacebar for instant drop in src/input/InputHandler.ts
+- [X] T018 [US1] Remove existing fast drop acceleration (spacebar hold) from FastDropManager in src/utils/FastDropManager.ts
+- [X] T019 [US1] Update Game loop to apply 2x multiplier for down arrow in src/game/Game.ts
+- [X] T020 [US1] Wire spacebar to hardDrop() method in src/input/InputHandler.ts
+- [X] T021 [US1] Update control hints in console log in src/main.ts
 - [ ] T022 [US1] Verify all US1 tests pass and achieve 80%+ coverage
 
 **Checkpoint**: Controls working correctly - down arrow 2x, spacebar instant drop
@@ -93,18 +93,18 @@
 
 ### Implementation for User Story 2
 
-- [ ] T028 [P] [US2] Implement gradient background HTML structure in index.html
-- [ ] T029 [P] [US2] Implement frosted glass border CSS in src/styles/glassmorphism.css
-- [ ] T030 [P] [US2] Define glass block styles for I-piece in src/render/styles.ts
-- [ ] T031 [P] [US2] Define glass block styles for J-piece in src/render/styles.ts
-- [ ] T032 [P] [US2] Define glass block styles for L-piece in src/render/styles.ts
-- [ ] T033 [P] [US2] Define glass block styles for O-piece in src/render/styles.ts
-- [ ] T034 [P] [US2] Define glass block styles for S-piece in src/render/styles.ts
-- [ ] T035 [P] [US2] Define glass block styles for T-piece in src/render/styles.ts
-- [ ] T036 [P] [US2] Define glass block styles for Z-piece in src/render/styles.ts
-- [ ] T037 [US2] Update Renderer to apply glass CSS classes to blocks in src/render/Renderer.ts
-- [ ] T038 [US2] Remove old 3D isometric rendering code from Renderer3D.ts
-- [ ] T039 [US2] Add @supports fallback for browsers without backdrop-filter in src/styles/glassmorphism.css
+- [X] T028 [P] [US2] Implement gradient background HTML structure in index.html
+- [X] T029 [P] [US2] Implement frosted glass border CSS in src/styles/glassmorphism.css
+- [X] T030 [P] [US2] Define glass block styles for I-piece in src/render/glass-colors.ts
+- [X] T031 [P] [US2] Define glass block styles for J-piece in src/render/glass-colors.ts
+- [X] T032 [P] [US2] Define glass block styles for L-piece in src/render/glass-colors.ts
+- [X] T033 [P] [US2] Define glass block styles for O-piece in src/render/glass-colors.ts
+- [X] T034 [P] [US2] Define glass block styles for S-piece in src/render/glass-colors.ts
+- [X] T035 [P] [US2] Define glass block styles for T-piece in src/render/glass-colors.ts
+- [X] T036 [P] [US2] Define glass block styles for Z-piece in src/render/glass-colors.ts
+- [X] T037 [US2] Update Renderer to apply glass effects using GlassRenderer in src/render/Renderer.ts
+- [X] T038 [US2] Remove old metallic rendering code from Renderer.ts
+- [X] T039 [US2] Add @supports fallback for browsers without backdrop-filter in src/styles/glassmorphism.css
 - [ ] T040 [US2] Verify all US2 tests pass and achieve 80%+ coverage
 
 **Checkpoint**: All visual effects working - gradient, frosted border, glass blocks

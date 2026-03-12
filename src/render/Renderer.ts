@@ -7,22 +7,20 @@
 
 import type { GameState, Piece, Grid, GameAPI } from '../game/types';
 import { CELL_SIZE, GRID_WIDTH, GRID_HEIGHT, ANIMATION_DURATIONS } from '../config/constants';
-import { GlassRenderer } from './GlassRenderer';
 import { EffectsManager } from './Effects';
+import { GlassRenderer } from './GlassRenderer';
 
 // Canvas layout constants
 const SIDEBAR_WIDTH = 150;
 const CANVAS_WIDTH = GRID_WIDTH * CELL_SIZE + SIDEBAR_WIDTH;
 const CANVAS_HEIGHT = GRID_HEIGHT * CELL_SIZE;
 
-// Gradient cache to avoid recreating on every frame
-const gradientCache = new Map<string, CanvasGradient>();
-
 export class Renderer {
   private ctx: CanvasRenderingContext2D;
   private canvas: HTMLCanvasElement;
   private game: GameAPI | null = null;
   private effectsManager: EffectsManager;
+  private glassRenderer: GlassRenderer;
 
   // Animation state
   private clearingRows: number[] = [];
@@ -45,6 +43,7 @@ export class Renderer {
 
     this.ctx = ctx;
     this.effectsManager = new EffectsManager(ctx, CELL_SIZE);
+    this.glassRenderer = new GlassRenderer(ctx, CELL_SIZE);
   }
 
   /** Set game reference for high score display */
@@ -133,12 +132,12 @@ export class Renderer {
       this.ctx.stroke();
     }
 
-    // Locked blocks
+    // Locked blocks with glass effect
     for (let y = 0; y < grid.height; y++) {
       for (let x = 0; x < grid.width; x++) {
         const color = grid.cells[y]![x];
         if (color) {
-          this.renderMetallicBlock(x, y, color);
+          this.glassRenderer.renderBlock(x, y, color);
         }
       }
     }
@@ -155,7 +154,7 @@ export class Renderer {
           const gridY = position.y + y;
 
           if (gridY >= 0) {
-            this.renderMetallicBlock(gridX, gridY, color);
+            this.glassRenderer.renderBlock(gridX, gridY, color);
           }
         }
       }
@@ -173,24 +172,15 @@ export class Renderer {
 
     const { shape, color } = piece;
 
+    // Create temporary glass renderer for preview with smaller cell size
+    const previewGlassRenderer = new GlassRenderer(this.ctx, previewCellSize);
+
     for (let y = 0; y < 4; y++) {
       for (let x = 0; x < 4; x++) {
         if (shape[y]![x]) {
-          const px = previewX + x * previewCellSize;
-          const py = previewY + y * previewCellSize;
-
-          const gradient = this.ctx.createLinearGradient(px, py, px + previewCellSize, py + previewCellSize);
-          const lighter = this.lightenHex(color, 40);
-          const darker = this.darkenHex(color, 30);
-          gradient.addColorStop(0, lighter);
-          gradient.addColorStop(0.5, color);
-          gradient.addColorStop(1, darker);
-
-          this.ctx.fillStyle = gradient;
-          this.ctx.fillRect(px + 1, py + 1, previewCellSize - 2, previewCellSize - 2);
-          this.ctx.strokeStyle = '#000';
-          this.ctx.lineWidth = 1;
-          this.ctx.strokeRect(px + 1, py + 1, previewCellSize - 2, previewCellSize - 2);
+          const gridX = (previewX + x * previewCellSize) / previewCellSize;
+          const gridY = (previewY + y * previewCellSize) / previewCellSize;
+          previewGlassRenderer.renderBlock(gridX, gridY, color);
         }
       }
     }
@@ -214,35 +204,6 @@ export class Renderer {
   /** Get effects manager for external access */
   public getEffectsManager(): EffectsManager {
     return this.effectsManager;
-  }
-
-  /** Render metallic block with gradient, highlight, and shadow */
-  private renderMetallicBlock(x: number, y: number, color: string): void {
-    const pixelX = x * CELL_SIZE + 1;
-    const pixelY = y * CELL_SIZE + 1;
-    const size = CELL_SIZE - 2;
-
-    // Use cached gradient or create new one
-    const cacheKey = `${color}-${size}`;
-    let gradient = gradientCache.get(cacheKey);
-
-    if (!gradient) {
-      gradient = createMetallicGradient(this.ctx, pixelX, pixelY, size, color);
-      gradientCache.set(cacheKey, gradient);
-    }
-
-    // Draw base block with metallic gradient
-    this.ctx.fillStyle = gradient;
-    this.ctx.fillRect(pixelX, pixelY, size, size);
-
-    // Add highlight and shadow
-    addHighlight(this.ctx, pixelX, pixelY, size);
-    addShadow(this.ctx, pixelX, pixelY, size);
-
-    // Border
-    this.ctx.strokeStyle = 'rgba(0,0,0,0.6)';
-    this.ctx.lineWidth = 1;
-    this.ctx.strokeRect(pixelX, pixelY, size, size);
   }
 
   /** Render line clear animation (fade out) */
@@ -407,21 +368,5 @@ export class Renderer {
     this.ctx.fillStyle = '#888';
     this.ctx.fillText('Press any key to start', cx, CANVAS_HEIGHT / 2 + 20);
     this.ctx.textAlign = 'left';
-  }
-
-  private lightenHex(hex: string, percent: number): string {
-    const num = parseInt(hex.replace('#', ''), 16);
-    const r = Math.min(255, (num >> 16) + Math.round(2.55 * percent));
-    const g = Math.min(255, ((num >> 8) & 0x00ff) + Math.round(2.55 * percent));
-    const b = Math.min(255, (num & 0x0000ff) + Math.round(2.55 * percent));
-    return `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, '0')}`;
-  }
-
-  private darkenHex(hex: string, percent: number): string {
-    const num = parseInt(hex.replace('#', ''), 16);
-    const r = Math.max(0, (num >> 16) - Math.round(2.55 * percent));
-    const g = Math.max(0, ((num >> 8) & 0x00ff) - Math.round(2.55 * percent));
-    const b = Math.max(0, (num & 0x0000ff) - Math.round(2.55 * percent));
-    return `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, '0')}`;
   }
 }

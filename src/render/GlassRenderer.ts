@@ -111,7 +111,7 @@ export class GlassRenderer {
   /**
    * Draw inner highlights and shadows for glass effect
    */
-  private drawInnerEffects(x: number, y: number, style: GlassBlockStyle): void {
+  private drawInnerEffects(x: number, y: number, _style: GlassBlockStyle): void {
     this.ctx.save();
 
     // Inner highlight (top-left)

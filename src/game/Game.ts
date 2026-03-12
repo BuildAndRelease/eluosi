@@ -3,7 +3,7 @@
  *
  * Main game logic implementing the GameAPI interface.
  * Manages game state, piece movement, line clearing, and game flow.
- * Supports fast drop acceleration with speed multiplier.
+ * Supports 2x speed multiplier for down arrow key.
  */
 
 import type { GameAPI, GameState, GameStatus, Piece } from './types';
@@ -12,7 +12,6 @@ import { createRandomPiece } from './piece-factory';
 import { isValidPosition, isTouchingBottom } from './collision';
 import { rotatePiece } from './rotation';
 import { FALL_SPEEDS, LOCK_DELAY } from '../config/constants';
-import type { FastDropManager } from '../utils/FastDropManager';
 
 export class Game implements GameAPI {
   private state: GameState;
@@ -20,7 +19,7 @@ export class Game implements GameAPI {
   private lastFallTime: number = 0;
   private lockDelayStartTime: number | null = null;
   private highScore: number = 0;
-  private fastDropManager: FastDropManager | null = null;
+  private speedMultiplier: number = 1.0;
 
   // Event callbacks
   public onScoreChange?: (score: number) => void;
@@ -42,11 +41,11 @@ export class Game implements GameAPI {
   }
 
   /**
-   * Set fast drop manager for acceleration support
-   * Called by InputHandler to provide fast drop integration
+   * Set speed multiplier from InputHandler
+   * Called by game loop to apply 2x speed when down arrow is held
    */
-  public setFastDropManager(manager: FastDropManager): void {
-    this.fastDropManager = manager;
+  public setSpeedMultiplier(multiplier: number): void {
+    this.speedMultiplier = multiplier;
   }
 
   private createInitialState(): GameState {
@@ -215,9 +214,8 @@ export class Game implements GameAPI {
     const now = Date.now();
     const fallSpeed = FALL_SPEEDS[Math.min(this.state.level, FALL_SPEEDS.length - 1)]!;
 
-    // Get speed multiplier from fast drop manager
-    const speedMultiplier = this.fastDropManager?.getSpeedMultiplier(performance.now()) ?? 1.0;
-    const adjustedFallSpeed = fallSpeed / speedMultiplier;
+    // Apply speed multiplier (2x when down arrow is held, 1x otherwise)
+    const adjustedFallSpeed = fallSpeed / this.speedMultiplier;
 
     // Auto-fall with speed multiplier
     if (now - this.lastFallTime >= adjustedFallSpeed) {

@@ -2,21 +2,20 @@
  * Input Handler
  *
  * Manages keyboard input and maps keys to game actions.
- * Handles fast drop acceleration with spacebar press/release.
+ * - Down arrow: 2x speed acceleration (hold for controlled descent)
+ * - Spacebar: Instant hard drop to bottom
  */
 
 import type { GameAPI } from '../game/types';
-import { FastDropManager } from '../utils/FastDropManager';
 
 export class InputHandler {
   private game: GameAPI;
   private keydownHandler: (e: KeyboardEvent) => void;
   private keyupHandler: (e: KeyboardEvent) => void;
-  private fastDropManager: FastDropManager;
+  private speedMultiplier: number = 1.0;
 
   constructor(game: GameAPI) {
     this.game = game;
-    this.fastDropManager = new FastDropManager();
 
     this.keydownHandler = (e: KeyboardEvent) => {
       this.handleKeydown(e);
@@ -39,10 +38,11 @@ export class InputHandler {
   }
 
   /**
-   * Get fast drop manager instance for game loop integration
+   * Get current speed multiplier for game loop integration
+   * Returns 2.0 when down arrow is held, 1.0 otherwise
    */
-  public getFastDropManager(): FastDropManager {
-    return this.fastDropManager;
+  public getSpeedMultiplier(): number {
+    return this.speedMultiplier;
   }
 
   private handleKeydown(e: KeyboardEvent): void {
@@ -66,7 +66,8 @@ export class InputHandler {
 
       case 'ArrowDown':
         e.preventDefault();
-        this.game.moveDown();
+        // Activate 2x speed multiplier when down arrow is held
+        this.speedMultiplier = 2.0;
         break;
 
       case 'ArrowUp':
@@ -76,8 +77,8 @@ export class InputHandler {
 
       case ' ':
         e.preventDefault();
-        // Activate fast drop on spacebar press
-        this.fastDropManager.activate();
+        // Instant hard drop to bottom (takes priority over down arrow)
+        this.game.hardDrop();
         break;
 
       case 'p':
@@ -110,10 +111,10 @@ export class InputHandler {
     }
 
     switch (e.key) {
-      case ' ':
+      case 'ArrowDown':
         e.preventDefault();
-        // Deactivate fast drop on spacebar release
-        this.fastDropManager.deactivate();
+        // Deactivate 2x speed multiplier when down arrow is released
+        this.speedMultiplier = 1.0;
         break;
     }
   }
