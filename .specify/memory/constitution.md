@@ -92,7 +92,7 @@ Performance is a feature. Game MUST meet defined performance targets:
 - **Frame Rate**: Stable 60fps during gameplay. No frame drops during block movement, rotation, or line clearing.
 - **Input Latency**: Keyboard input to visual feedback <50ms (p95). Use event-driven input handling, not polling.
 - **Load Time**: First screen render <2 seconds. Total asset loading <3 seconds.
-- **Memory Usage**: <50MB total memory footprint. No memory leaks during extended gameplay sessions.
+- **Memory Usage**: <80MB total memory footprint. No memory leaks during extended gameplay sessions. (Updated from 50MB to accommodate CSS glassmorphism effects with backdrop-filter)
 - **Resource Efficiency**: CPU usage <30% on modern hardware during active gameplay. Efficient Canvas rendering with minimal redraws.
 - **Optimization**: Profile before optimizing. Use Chrome DevTools Performance tab. Document performance-critical sections. Avoid premature optimization.
 - **Monitoring**: Track frame rate, input latency, memory usage during development. Set up performance budgets.
