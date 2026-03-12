@@ -1,0 +1,538 @@
+# Implementation Plan: UI Controls and Visual Redesign
+
+**Branch**: `003-ui-controls-redesign` | **Date**: 2026-03-12 | **Spec**: [spec.md](./spec.md)
+**Input**: Feature specification from `/specs/003-ui-controls-redesign/spec.md`
+
+## Summary
+
+Redesign the Tetris game UI with modern glassmorphism visual style and improved keyboard controls. Replace existing 3D isometric rendering with semi-transparent glass-effect blocks, add gradient background with blur effects, implement frosted-glass game board border, and modify controls to use down arrow for 2x speed and spacebar for instant drop. Target performance: 60 FPS with <50ms input latency maintained.
+
+## Technical Context
+
+**Language/Version**: TypeScript 5.6 (strict mode enabled) + HTML/CSS for visual effects
+**Primary Dependencies**: ZERO runtime dependencies (Vite 6.0 for build only)
+**Storage**: localStorage (game state persistence)
+**Testing**: Vitest 4.0.18 with @vitest/coverage-v8
+**Target Platform**: Modern browsers (Chrome 90+, Firefox 88+, Safari 14+, Edge 90+) with CSS backdrop-filter support
+**Project Type**: Browser-based game (pure frontend, zero backend)
+**Performance Goals**: 60 FPS stable, <50ms input latency, CSS-based glass effects
+**Constraints**: <80MB memory, zero runtime dependencies, CSS-only visual effects (no Canvas manipulation for glass)
+**Scale/Scope**: Single-player game, 10×20 grid, 7 piece types, glassmorphism rendering with CSS
+
+## Constitution Check
+
+*GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
+
+### Code Quality Standards
+- ✅ **Code Simplicity**: CSS-based glass effects, minimal DOM manipulation
+- ✅ **Detailed Comments**: All control logic and CSS class mappings documented
+- ✅ **Immutability**: Game state managed immutably
+- ✅ **File Organization**: Modified files stay under 400 lines
+- ✅ **Error Handling**: Graceful degradation if backdrop-filter unsupported
+- ✅ **Input Validation**: Control input parameters validated
+- ✅ **Code Readability**: Control functions <50 lines each
+
+### Testing Standards
+- ✅ **TDD Workflow**: Tests for control behavior, speed multipliers
+- ✅ **Test Types**: Unit (control logic), Integration (keyboard events), Visual regression (CSS effects)
+- ✅ **Coverage**: 80%+ for new control logic
+- ✅ **Performance Testing**: 60fps verified with CSS effects active
+
+### User Experience Consistency
+- ✅ **Instant Response**: Control changes respond within <50ms
+- ✅ **Visual Consistency**: 60fps maintained with glass effects
+- ✅ **Intuitive Controls**: Down arrow (2x) vs spacebar (instant) clearly differentiated
+- ✅ **Clear Feedback**: Visual distinction between control modes
+- ✅ **Loading States**: No additional assets, no load time impact
+
+### Performance Requirements
+- ✅ **Frame Rate**: 60fps target with CSS glass effects
+- ✅ **Input Latency**: <50ms for both down arrow and spacebar
+- ✅ **Load Time**: No change (CSS-only, no new assets)
+- ✅ **Memory Usage**: <80MB (CSS effects don't add memory overhead)
+- ✅ **Resource Efficiency**: CSS backdrop-filter hardware-accelerated
+
+### TypeScript & Dependency Management
+- ✅ **TypeScript First**: All new code in TypeScript strict mode
+- ✅ **Strict Type Checking**: No `any` types
+- ✅ **Zero Runtime Dependencies**: Pure HTML/CSS for visual effects
+- ✅ **Dev Dependencies Only**: No new dependencies required
+
+### Technical Constraints
+- ✅ **MUST Use**: HTML/CSS (backdrop-filter, gradients, shadows), TypeScript (control logic), existing Canvas rendering
+- ✅ **MUST NOT Use**: No CSS frameworks (Tailwind classes provided as reference only), no external dependencies
+- ✅ **Browser Compatibility**: Chrome 90+, Firefox 88+, Safari 14+, Edge 90+ (all support backdrop-filter)
+
+### Design Principles
+- ✅ **Glassmorphism Visual Style**: Semi-transparent blocks with blur, frosted borders, gradient background
+- ✅ **Audio Immersion**: Existing sound system unchanged
+- ✅ **Minimalist Interface**: Clean tech-inspired design
+- ✅ **Visual Feedback**: Clear distinction between control modes
+
+### Quality Gates
+- ✅ All gates applicable and will be verified during implementation
+
+**Gate Status**: ✅ PASSED - No constitution violations. Feature aligns with zero-dependency, performance-first, TypeScript-strict principles.
+
+## Project Structure
+
+### Documentation (this feature)
+
+```text
+specs/003-ui-controls-redesign/
+├── plan.md              # This file
+├── research.md          # Phase 0: CSS glassmorphism, backdrop-filter browser support
+├── data-model.md        # Phase 1: Control state models
+├── quickstart.md        # Phase 1: Developer guide for CSS glass effects
+├── contracts/           # Phase 1: Control API, CSS class structure
+│   ├── control-api.md
+│   └── css-structure.md
+└── tasks.md             # Phase 2: Implementation tasks (generated by /speckit.tasks)
+```
+
+### Source Code (repository root)
+
+```text
+src/
+├── game/                # V1/V2 core logic (MODIFIED for controls)
+│   ├── Game.ts          # MODIFY: Remove fast drop acceleration, add instant drop
+│   └── types.ts         # UNCHANGED
+├── input/               # Input handling (MODIFIED)
+│   └── InputHandler.ts  # MODIFY: Down arrow 2x, spacebar instant drop
+├── render/              # Rendering (MODIFIED for CSS)
+│   ├── Renderer.ts      # MODIFY: Apply CSS classes for glass effects
+│   ├── styles.ts        # MODIFY: Replace 3D colors with glass effect CSS classes
+│   └── Renderer3D.ts    # REMOVE: No longer needed (replaced by CSS)
+├── utils/               # Utilities (MODIFIED)
+│   └── FastDropManager.ts  # REMOVE: No longer needed (instant drop instead)
+└── main.ts              # UNCHANGED
+
+styles/                  # NEW: CSS for glassmorphism
+└── glass-effects.css    # NEW: Glass blocks, frosted border, gradient background
+
+tests/
+├── unit/
+│   ├── control-logic.test.ts      # NEW: Down arrow 2x, spacebar instant
+│   └── fast-drop.test.ts          # REMOVE: No longer applicable
+└── integration/
+    ├── keyboard-controls.test.ts  # NEW: Integration tests for new controls
+    └── fast-drop.test.ts          # REMOVE: No longer applicable
+```
+
+## Architecture
+
+### High-Level Design
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                     Browser Window                           │
+│  ┌───────────────────────────────────────────────────────┐  │
+│  │  Gradient Background (CSS)                            │  │
+│  │  - Light blue (top-left) → Deep purple (bottom-right)│  │
+│  │  - Blur circles for depth                            │  │
+│  │  ┌─────────────────────────────────────────────────┐ │  │
+│  │  │  Game Board (Frosted Glass Border)              │ │  │
+│  │  │  - backdrop-filter: blur()                      │ │  │
+│  │  │  - box-shadow for 3D depth                      │ │  │
+│  │  │  ┌───────────────────────────────────────────┐  │ │  │
+│  │  │  │  Grid (10×20)                             │  │ │  │
+│  │  │  │  - Glass blocks (semi-transparent)        │  │ │  │
+│  │  │  │  - Inset shadows for depth                │  │ │  │
+│  │  │  │  - Outer glow for tech feel               │  │ │  │
+│  │  │  └───────────────────────────────────────────┘  │ │  │
+│  │  └─────────────────────────────────────────────────┘ │  │
+│  └───────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────┘
+
+Input Flow:
+Keyboard → InputHandler → Game → Renderer → DOM (CSS classes)
+  ↓ Down Arrow: 2x speed multiplier
+  ↓ Spacebar: Instant drop to bottom
+```
+
+### Component Interactions
+
+```
+InputHandler (MODIFIED)
+├── handleKeydown()
+│   ├── Down Arrow → Apply 2x speed multiplier
+│   └── Spacebar → Trigger instant drop
+└── handleKeyup()
+    └── Down Arrow → Remove 2x speed multiplier
+
+Game (MODIFIED)
+├── gameLoop()
+│   └── Apply speed multiplier to fall timing
+├── hardDrop() (RENAMED from existing)
+│   └── Instant drop to lowest position
+└── moveDown()
+    └── Normal/2x speed based on multiplier
+
+Renderer (MODIFIED)
+├── render()
+│   ├── Apply CSS classes for glass effects
+│   ├── Set background gradient
+│   └── Apply frosted border to game board
+└── renderBlock()
+    └── Apply glass CSS classes based on piece type
+```
+
+## Implementation Phases
+
+### Phase 0: Research & Validation (1-2 hours)
+
+**Goal**: Validate CSS glassmorphism approach and browser compatibility
+
+**Tasks**:
+1. Research CSS `backdrop-filter` browser support and fallbacks
+2. Test gradient background performance with blur circles
+3. Validate glass effect CSS (transparency, shadows, glows) on sample blocks
+4. Measure performance impact of CSS effects (target: 60 FPS maintained)
+5. Document CSS class structure and naming conventions
+
+**Deliverables**:
+- `research.md`: CSS glassmorphism techniques, browser compatibility matrix
+- Performance benchmarks for CSS effects
+- CSS class naming conventions
+
+**Acceptance Criteria**:
+- backdrop-filter works on Chrome 90+, Firefox 88+, Safari 14+, Edge 90+
+- Gradient background with blur circles maintains 60 FPS
+- Glass effect CSS renders correctly on all target browsers
+
+---
+
+### Phase 1: Design & Contracts (2-3 hours)
+
+**Goal**: Define data models, API contracts, and CSS structure
+
+**Tasks**:
+1. Define control state model (speed multiplier, instant drop flag)
+2. Design CSS class structure for glass effects
+3. Document InputHandler API changes (down arrow, spacebar)
+4. Create CSS contract for glass blocks (7 piece types)
+5. Write developer quickstart guide
+
+**Deliverables**:
+- `data-model.md`: Control state, CSS class mappings
+- `contracts/control-api.md`: InputHandler interface changes
+- `contracts/css-structure.md`: Glass effect CSS classes
+- `quickstart.md`: Setup guide for CSS glass effects
+
+**Acceptance Criteria**:
+- All data models documented with TypeScript interfaces
+- CSS class structure covers all 7 piece types
+- API contracts specify input/output for all modified functions
+
+---
+
+### Phase 2: Task Breakdown (1 hour)
+
+**Goal**: Generate detailed implementation tasks
+
+**Command**: `/speckit.tasks`
+
+**Deliverables**:
+- `tasks.md`: Prioritized, dependency-ordered task list
+
+---
+
+### Phase 3: Implementation (6-8 hours)
+
+**Goal**: Implement control changes and CSS visual effects
+
+**User Stories** (from spec.md):
+1. **US1 (P1)**: Improved Drop Controls - Down arrow 2x, spacebar instant
+2. **US2 (P2)**: Glassmorphism Visual Style - Gradient, frosted border, glass blocks
+
+**Key Implementation Files**:
+
+1. **styles/glass-effects.css** (NEW)
+   - Gradient background with blur circles
+   - Frosted glass border for game board
+   - Glass block styles (7 piece types)
+   - Inset shadows, outer glows, tech-inspired effects
+
+2. **src/input/InputHandler.ts** (MODIFIED)
+   - Remove FastDropManager integration
+   - Add 2x speed multiplier for down arrow
+   - Change spacebar to instant drop (remove acceleration)
+
+3. **src/game/Game.ts** (MODIFIED)
+   - Remove FastDropManager dependency
+   - Add speed multiplier state (1x or 2x)
+   - Modify gameLoop() to apply multiplier
+   - Ensure hardDrop() does instant placement
+
+4. **src/render/Renderer.ts** (MODIFIED)
+   - Remove Renderer3D integration
+   - Apply CSS classes for glass effects
+   - Map piece types to glass CSS classes
+
+5. **src/render/styles.ts** (MODIFIED)
+   - Replace 3D color constants with CSS class names
+   - Define glass effect class mappings
+
+6. **src/main.ts** (MODIFIED)
+   - Remove FastDropManager setup
+   - Update control hints (down arrow 2x, spacebar instant)
+
+**Removed Files**:
+- `src/render/Renderer3D.ts` (replaced by CSS)
+- `src/utils/FastDropManager.ts` (instant drop instead)
+- `tests/unit/fast-drop.test.ts` (no longer applicable)
+- `tests/integration/fast-drop.test.ts` (no longer applicable)
+- `tests/unit/3d-transforms.test.ts` (no longer applicable)
+- `tests/integration/3d-rendering.test.ts` (no longer applicable)
+
+---
+
+### Phase 4: Testing & Validation (2-3 hours)
+
+**Goal**: Verify control behavior and visual effects
+
+**Test Coverage**:
+1. Unit tests for control logic (2x multiplier, instant drop)
+2. Integration tests for keyboard events
+3. Visual regression tests for CSS effects
+4. Performance tests (60 FPS with glass effects)
+5. Browser compatibility tests
+
+**Acceptance Criteria**:
+- 80%+ test coverage for new control logic
+- All tests passing
+- 60 FPS maintained with CSS effects
+- <50ms input latency for both controls
+
+---
+
+### Phase 5: Integration & Polish (2-3 hours)
+
+**Goal**: Final integration and visual polish
+
+**Tasks**:
+1. Cross-browser testing (Chrome, Firefox, Safari, Edge)
+2. Performance profiling with CSS effects
+3. Visual polish (adjust blur, shadows, glows)
+4. Documentation updates
+5. Final QA
+
+---
+
+## Technical Decisions
+
+### CSS Glassmorphism Implementation
+
+**Gradient Background** (from user-provided reference):
+```css
+/* Gradient background with blur circles */
+.background {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.blur-circle-1 {
+  position: absolute;
+  top: -10%;
+  left: -10%;
+  width: 40%;
+  height: 40%;
+  border-radius: 50%;
+  background: rgba(99, 102, 241, 0.3); /* indigo-600/30 */
+  filter: blur(100px);
+}
+
+.blur-circle-2 {
+  position: absolute;
+  bottom: -10%;
+  right: -10%;
+  width: 50%;
+  height: 50%;
+  border-radius: 50%;
+  background: rgba(192, 38, 211, 0.3); /* fuchsia-600/30 */
+  filter: blur(120px);
+}
+
+.blur-circle-3 {
+  position: absolute;
+  top: 40%;
+  left: 60%;
+  width: 30%;
+  height: 30%;
+  border-radius: 50%;
+  background: rgba(8, 145, 178, 0.2); /* cyan-600/20 */
+  filter: blur(90px);
+}
+```
+
+**Frosted Glass Border** (from user-provided reference):
+```css
+.game-board {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+              0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+```
+
+**Glass Block Styles** (from user-provided reference):
+```css
+/* Example: Cyan I-piece */
+.block-I {
+  background: rgba(34, 211, 238, 0.3); /* cyan-400/30 */
+  border: 1px solid rgba(224, 242, 254, 0.7); /* cyan-100/70 */
+  border-bottom-color: rgba(22, 78, 99, 0.5); /* cyan-900/50 */
+  border-right-color: rgba(22, 78, 99, 0.5);
+  box-shadow: inset 1px 1px 4px rgba(255, 255, 255, 0.8),
+              inset -1px -1px 4px rgba(0, 0, 0, 0.4),
+              0 0 12px rgba(34, 211, 238, 0.5);
+}
+
+/* Repeat for all 7 piece types: I, J, L, O, S, T, Z */
+```
+
+### Control Logic Changes
+
+**Down Arrow (2x Speed)**:
+```typescript
+// In InputHandler.ts
+private speedMultiplier: number = 1.0;
+
+handleKeydown(e: KeyboardEvent) {
+  if (e.key === 'ArrowDown') {
+    this.speedMultiplier = 2.0;
+  }
+}
+
+handleKeyup(e: KeyboardEvent) {
+  if (e.key === 'ArrowDown') {
+    this.speedMultiplier = 1.0;
+  }
+}
+
+getSpeedMultiplier(): number {
+  return this.speedMultiplier;
+}
+```
+
+**Spacebar (Instant Drop)**:
+```typescript
+// In InputHandler.ts
+handleKeydown(e: KeyboardEvent) {
+  if (e.key === ' ') {
+    e.preventDefault();
+    this.game.hardDrop(); // Instant drop to bottom
+  }
+}
+```
+
+**Game Loop Integration**:
+```typescript
+// In Game.ts
+private gameLoop = (): void => {
+  const now = Date.now();
+  const fallSpeed = FALL_SPEEDS[this.state.level];
+  const speedMultiplier = this.inputHandler.getSpeedMultiplier();
+  const adjustedFallSpeed = fallSpeed / speedMultiplier;
+
+  if (now - this.lastFallTime >= adjustedFallSpeed) {
+    this.moveDown();
+    this.lastFallTime = now;
+  }
+
+  this.animationFrameId = requestAnimationFrame(this.gameLoop);
+};
+```
+
+### Browser Compatibility
+
+**CSS backdrop-filter Support**:
+- Chrome 76+ ✅
+- Firefox 103+ ✅
+- Safari 9+ ✅
+- Edge 79+ ✅
+
+**Fallback Strategy**:
+```css
+/* Fallback for browsers without backdrop-filter */
+@supports not (backdrop-filter: blur(12px)) {
+  .game-board {
+    background: rgba(255, 255, 255, 0.2); /* Slightly more opaque */
+  }
+}
+```
+
+## Performance Considerations
+
+### CSS Performance
+- **backdrop-filter**: Hardware-accelerated on modern browsers
+- **Gradient blur circles**: Use `will-change: filter` for optimization
+- **Box shadows**: Limit to 2-3 shadows per element
+- **Target**: 60 FPS maintained with all effects active
+
+### Control Performance
+- **Input latency**: <50ms for both down arrow and spacebar
+- **Speed multiplier**: Simple division operation, negligible overhead
+- **Instant drop**: Reuse existing hardDrop() logic, no performance impact
+
+## Testing Strategy
+
+### Unit Tests
+1. Control logic (2x multiplier, instant drop)
+2. Speed multiplier calculation
+3. Instant drop positioning
+
+### Integration Tests
+1. Keyboard event handling (down arrow, spacebar)
+2. Control priority (spacebar during down arrow)
+3. Game loop with speed multiplier
+
+### Visual Regression Tests
+1. Gradient background rendering
+2. Frosted glass border appearance
+3. Glass block styles (all 7 types)
+4. Cross-browser visual consistency
+
+### Performance Tests
+1. 60 FPS with CSS effects active
+2. <50ms input latency for controls
+3. Memory usage <80MB
+
+## Risks & Mitigation
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| backdrop-filter unsupported | Medium | Fallback to solid background |
+| CSS blur performance | High | Use hardware acceleration, limit blur radius |
+| Control feel different | Medium | Extensive playtesting, adjust 2x multiplier if needed |
+| Visual inconsistency | Low | Cross-browser testing, CSS normalization |
+
+## Success Metrics
+
+- ✅ Down arrow provides 2x speed (measurable in tests)
+- ✅ Spacebar instant drop (<50ms to bottom)
+- ✅ Gradient background visible on all browsers
+- ✅ Frosted glass border with depth perception
+- ✅ Glass blocks semi-transparent with glows
+- ✅ 60 FPS maintained with all effects
+- ✅ <50ms input latency for both controls
+- ✅ 80%+ test coverage
+
+## Next Steps
+
+1. Run `/speckit.tasks` to generate detailed task breakdown
+2. Begin Phase 0 research (CSS glassmorphism validation)
+3. Proceed with Phase 1 design (data models, contracts)
+4. Implement Phase 3 (controls + CSS effects)
+5. Test Phase 4 (unit, integration, visual regression)
+6. Polish Phase 5 (cross-browser, performance, QA)
+
+---
+
+**Estimated Total Effort**: 14-20 hours
+**Target Completion**: 2-3 days (with testing and polish)
