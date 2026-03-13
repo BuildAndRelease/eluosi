@@ -103,6 +103,8 @@ export class Game implements GameAPI {
 
   public reset(): void {
     this.stopGameLoop();
+    this.lockDelayStartTime = null;
+    this.lastFallTime = 0;
     this.state = this.createInitialState();
     this.onStateChange?.('menu');
   }
