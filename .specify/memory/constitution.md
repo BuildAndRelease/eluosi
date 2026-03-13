@@ -1,20 +1,15 @@
 <!--
 Sync Impact Report:
-- Version: 1.1.0 → 2.0.0 (MAJOR: Constitution redefined for Tetris game project with specific constraints)
+- Version: 2.0.0 → 2.1.0 (MINOR: Updated visual design principles to support colorful theme)
 - Modified principles:
-  * IV. Performance Requirements → Enhanced with game-specific targets (60fps, <50ms input latency)
-  * V. TypeScript & Dependency Management → Enhanced with zero-dependency constraint
+  * VII. Design Principles → Updated from metallic-only to multi-theme system with colorful as current theme
+  * Project Context → Updated vision to reflect colorful aesthetic
 - Added sections:
-  * Project Context (NEW) - Tetris game vision and scope
-  * VI. Technical Constraints (NEW) - Required/forbidden technologies
-  * VII. Design Principles (NEW) - Metallic visual style and audio requirements
-  * Decision Records (NEW) - Key technical decisions with rationale
-  * Project Boundaries (NEW) - Explicit scope limitations and future extensions
+  * Visual Theme System (NEW) - Support for multiple visual themes
 - Removed sections: N/A
 - Templates requiring updates:
-  ✅ plan-template.md (Constitution Check must verify game-specific constraints)
-  ✅ tasks-template.md (Tasks must align with Canvas/Web Audio API requirements)
-  ✅ spec-template.md (Requirements must respect project boundaries)
+  ✅ plan-template.md (Constitution Check updated for colorful theme)
+  ✅ tasks-template.md (Tasks align with colorful visual style)
 - Follow-up TODOs: None
 -->
 
@@ -23,7 +18,7 @@ Sync Impact Report:
 ## Project Context
 
 **Project Name**: Eluosi (俄罗斯方块 - Tetris)
-**Vision**: Create a classic Tetris game with metallic aesthetics, delivering smooth and immersive gameplay experience in the browser while maintaining code maintainability and extensibility.
+**Vision**: Create a classic Tetris game with vibrant colorful aesthetics and glassmorphism effects, delivering smooth and immersive gameplay experience in the browser while maintaining code maintainability and extensibility.
 
 **Architecture**: Pure frontend, zero backend, local-first data storage, progressive enhancement for modern browsers.
 
@@ -121,7 +116,7 @@ TypeScript is the PRIMARY language. Dependencies MUST be ZERO (except dev depend
 **MUST Use** (Required Technologies):
 - **TypeScript**: Strict mode enabled, all code typed
 - **HTML5 Canvas**: For game rendering (chosen for performance and animation suitability)
-- **Web Audio API**: For sound effects and music (metallic sound design)
+- **Web Audio API**: For sound effects and music (theme-appropriate sound design)
 - **localStorage**: For game state persistence (high scores, settings)
 - **Vite**: Build tool and dev server (fast, zero-config TypeScript support)
 
@@ -144,30 +139,54 @@ TypeScript is the PRIMARY language. Dependencies MUST be ZERO (except dev depend
 
 ### VII. Design Principles
 
-Visual and audio design MUST create immersive metallic aesthetic:
+Visual and audio design MUST create immersive and engaging aesthetic. The game supports multiple visual themes with colorful style as the current active theme:
 
-- **Metallic Visual Style**:
-  - Blocks MUST have metallic sheen and reflective surfaces
-  - Use gradients, highlights, and shadows to create 3D metallic appearance
-  - Color palette: Steel gray, chrome silver, brushed aluminum, copper accents
-  - Subtle animations for block placement (metallic impact effect)
+#### Current Theme: Colorful with Glassmorphism
+
+- **Colorful Visual Style**:
+  - Blocks MUST use vibrant colors with high saturation (80-90%)
+  - Color palette: Cyan (#00D9FF), Yellow (#FFD700), Purple (#B24BF3), Green (#00FF7F), Red (#FF4757), Blue (#3742FA), Orange (#FF6348)
+  - All colors MUST meet WCAG AA contrast requirements (4.5:1 minimum)
+  - NO black, white, or gray tones for blocks
+  - Distinct hues for easy differentiation between block types
+
+- **Glassmorphism Background**:
+  - Game area MUST have semi-transparent background with Gaussian blur effect
+  - CSS backdrop-filter: blur(10px) for glassmorphism effect
+  - Static gradient background (light purple to light blue, low saturation)
+  - Fallback to simple transparency if backdrop-filter unsupported
+  - Performance monitoring required (disable blur if <60fps)
+
 - **Audio Immersion**:
-  - Metallic sound effects: Block drop (metal clank), line clear (metallic chime), game over (metal crash)
+  - Sound effects appropriate to visual theme
   - Audio format: MP3 or WebM for browser compatibility
   - Volume controls and mute option required
   - Sound effects MUST be short (<500ms) to avoid latency
+
 - **Minimalist Interface**:
   - Clean layout with clear information hierarchy
   - Display: Current score, level, next block preview, high score
   - No unnecessary decorations or distractions
   - Focus on gameplay area
+
 - **Visual Feedback**:
-  - Line clear animation with metallic particle effects
-  - Block lock-in animation (subtle metallic flash)
-  - Level up visual celebration
+  - Line clear animation with colorful effects
+  - Block lock-in animation (subtle flash)
+  - Level up visual celebration (optional)
   - Game over screen with score summary
 
-**Rationale**: Consistent metallic theme creates unique visual identity and immersive experience. Audio feedback enhances satisfaction and game feel. Minimalist interface keeps focus on gameplay. Visual feedback makes game state changes clear and satisfying.
+#### Legacy Theme: Metallic (Deprecated)
+
+The original metallic theme (steel gray, chrome silver, brushed aluminum) has been replaced by the colorful theme. Metallic assets may be retained for potential future theme system.
+
+#### Theme System Guidelines
+
+- Visual themes MUST maintain performance targets (60fps, <80MB memory)
+- All themes MUST meet accessibility standards (WCAG AA)
+- Theme switching system is a potential future extension
+- Current implementation focuses on colorful theme only
+
+**Rationale**: Colorful theme with glassmorphism creates modern, vibrant visual identity and immersive experience. High-contrast colors improve accessibility and block differentiation. Audio feedback enhances satisfaction and game feel. Minimalist interface keeps focus on gameplay. Visual feedback makes game state changes clear and satisfying.
 
 ## Decision Records
 
@@ -182,6 +201,7 @@ Key technical decisions with rationale:
 | **Testing Framework** | Vitest (recommended) | Native Vite integration, fast, Jest-compatible API, TypeScript support out of the box |
 | **Code Style** | ESLint + Prettier | Automated formatting and linting, consistent code style, catches common errors |
 | **Module System** | ES Modules | Native browser support, tree-shaking, better for code splitting |
+| **Visual Theme** | Colorful + Glassmorphism | Modern aesthetic, high accessibility (WCAG AA), vibrant user experience, replaces metallic theme |
 
 ## Project Boundaries
 
@@ -220,7 +240,7 @@ All code changes MUST pass these gates before merge:
 6. **Performance Validation**: 60fps stable frame rate verified. Input latency <50ms verified. No memory leaks detected.
 7. **Linting/Formatting**: Zero ESLint errors. Code formatted with Prettier.
 8. **Browser Compatibility**: Tested in Chrome, Firefox, Safari, Edge (latest versions).
-9. **Audio/Visual Quality**: Metallic aesthetic maintained. Sound effects appropriate and non-jarring.
+9. **Audio/Visual Quality**: Visual theme aesthetic maintained. Sound effects appropriate and non-jarring.
 10. **localStorage Handling**: Data persistence working correctly. Graceful handling of quota exceeded errors.
 
 ## Review Process
@@ -243,7 +263,7 @@ All code changes MUST pass these gates before merge:
 ### Visual/Audio Review
 
 - **Trigger**: Changes to rendering, animations, sound effects, or UI
-- **Scope**: Verify metallic aesthetic maintained, animations smooth, sounds appropriate
+- **Scope**: Verify visual theme aesthetic maintained, animations smooth, sounds appropriate
 - **Tools**: Manual testing in target browsers, visual inspection, audio playback testing
 
 ## Governance
@@ -272,4 +292,4 @@ This constitution supersedes all other practices and conventions. All team membe
 - Quarterly audits to identify systemic compliance issues
 - Performance benchmarks run weekly to catch regressions early
 
-**Version**: 2.0.0 | **Ratified**: 2026-03-10 | **Last Amended**: 2026-03-12
+**Version**: 2.1.0 | **Ratified**: 2026-03-10 | **Last Amended**: 2026-03-13

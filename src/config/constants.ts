@@ -32,16 +32,47 @@ export const FALL_SPEEDS = [
   100,  // Level 9+
 ];
 
-// Scoring values (base scores, multiplied by level + 1)
-export const SCORE_VALUES = {
-  SINGLE: 50,   // 1 line
-  DOUBLE: 300,  // 2 lines
-  TRIPLE: 500,  // 3 lines
-  TETRIS: 1000, // 4 lines
-};
+// Scoring values (new colorful progression system)
+// Non-linear scoring: 1 line: 10pts, 2 lines: 25pts, 3 lines: 40pts, 4 lines: 55pts
+export const SCORING_TABLE = {
+  1: 10,
+  2: 25,
+  3: 40,
+  4: 55,
+} as const;
 
-// Level progression
-export const POINTS_PER_LEVEL = 500;
+// Level progression (new system)
+// Level-up threshold: (target_level) * 100 * 2
+// Example: Level 1 = 200pts, Level 2 = 400pts, Level 3 = 600pts
+export const LEVEL_THRESHOLDS = {
+  1: 200,
+  2: 400,
+  3: 600,
+  4: 800,
+  5: 1000,
+  6: 1200,
+  7: 1400,
+  8: 1600,
+  9: 1800,
+  10: 2000,
+} as const;
+
+// Speed multipliers by level (new system)
+// Level 0: 1x, Level 1: 2x, Level 2: 3x, Level 3+: 4x (capped)
+export const SPEED_MULTIPLIERS = {
+  0: 1,
+  1: 2,
+  2: 3,
+  3: 4,
+  // Level 4+ stays at 4x (max speed)
+} as const;
+
+// Down key speed multiplier (multiplicative with level speed)
+// Example: Level 2 (3x) + Down key (4x) = 12x base speed
+export const DOWN_KEY_MULTIPLIER = 4;
+
+// Obstacle row configuration
+export const OBSTACLE_ROW_START_LEVEL = 4; // Obstacle rows start at level 4
 export const MAX_LEVEL = 15;
 
 // Soft drop speed multiplier

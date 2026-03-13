@@ -9,7 +9,8 @@
  * - Outer glow effect
  */
 
-import { getGlassStyle, parseRgba, type GlassBlockStyle } from './glass-colors';
+import { getGlassStyle, getGlassStyleForPiece, parseRgba, type GlassBlockStyle } from './glass-colors';
+import type { PieceType } from '../game/types';
 
 export class GlassRenderer {
   private ctx: CanvasRenderingContext2D;

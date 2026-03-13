@@ -6,7 +6,7 @@
  */
 
 import type { PieceType } from './types';
-import { BLOCK_COLORS } from '../config/constants';
+import { COLORFUL_PALETTE } from '../config/colors';
 
 /**
  * Shape matrices for all 7 Tetromino types
@@ -229,8 +229,8 @@ export const PIECE_SHAPES: Record<PieceType, number[][][]> = {
 };
 
 /**
- * Get color for a piece type
+ * Get color for a piece type (colorful palette)
  */
 export function getPieceColor(type: PieceType): string {
-  return BLOCK_COLORS[type];
+  return COLORFUL_PALETTE[type];
 }
