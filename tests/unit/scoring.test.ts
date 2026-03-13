@@ -1,155 +1,102 @@
 /**
- * Scoring Tests
+ * Unit Tests: Scoring System
  *
- * Tests for score calculation (50/300/500/1000 × (level+1) for 1/2/3/4 lines).
+ * Tests for non-linear scoring formula (10/25/40/55 points).
  */
 
-import { describe, it, expect, beforeEach } from 'vitest';
-import { Game } from '../../src/game/Game';
+import { describe, it, expect } from 'vitest';
+import { calculateScore, calculateScoreFormula, validateScoringTable, SCORING_TABLE } from '../../src/game/scoring';
 
-describe('Scoring', () => {
-  let game: Game;
-
-  beforeEach(() => {
-    game = new Game();
-    game.start();
-  });
-
-  describe('Base score calculation', () => {
-    it('should award 50 × (level+1) for single line clear', () => {
-      const state = game.getGameState();
-      const level = state.level;
-      const expectedScore = 50 * (level + 1);
-
-      // Fill bottom row except 4 cells
-      for (let x = 0; x < 6; x++) {
-        state.grid.cells[19]![x] = '#FF0000';
-      }
-
-      state.currentPiece!.position.x = 6;
-      state.currentPiece!.position.y = 18;
-
-      const score1 = state.score;
-      game.hardDrop();
-
-      const state2 = game.getGameState();
-      expect(state2.score - score1).toBe(expectedScore);
+describe('Scoring System', () => {
+  describe('SCORING_TABLE', () => {
+    it('should have correct point values for 1-4 lines', () => {
+      expect(SCORING_TABLE[1]).toBe(10);
+      expect(SCORING_TABLE[2]).toBe(25);
+      expect(SCORING_TABLE[3]).toBe(40);
+      expect(SCORING_TABLE[4]).toBe(55);
     });
 
-    it('should award 300 × (level+1) for double line clear', () => {
-      const state = game.getGameState();
-      const level = state.level;
-      const expectedScore = 300 * (level + 1);
-
-      // Fill rows 18 and 19 except 4 cells each
-      for (let y = 18; y < 20; y++) {
-        for (let x = 0; x < 6; x++) {
-          state.grid.cells[y]![x] = '#FF0000';
-        }
-      }
-
-      // Position piece to complete both rows
-      state.currentPiece!.position.x = 6;
-      state.currentPiece!.position.y = 17;
-
-      const score1 = state.score;
-      game.hardDrop();
-
-      const state2 = game.getGameState();
-      expect(state2.score - score1).toBe(expectedScore);
-    });
-
-    it('should award 500 × (level+1) for triple line clear', () => {
-      const state = game.getGameState();
-      const level = state.level;
-      const expectedScore = 500 * (level + 1);
-
-      // Fill rows 17, 18, 19 except 4 cells each
-      for (let y = 17; y < 20; y++) {
-        for (let x = 0; x < 6; x++) {
-          state.grid.cells[y]![x] = '#FF0000';
-        }
-      }
-
-      state.currentPiece!.position.x = 6;
-      state.currentPiece!.position.y = 16;
-
-      const score1 = state.score;
-      game.hardDrop();
-
-      const state2 = game.getGameState();
-      expect(state2.score - score1).toBe(expectedScore);
-    });
-
-    it('should award 1000 × (level+1) for Tetris (4 lines)', () => {
-      const state = game.getGameState();
-      const level = state.level;
-      const expectedScore = 1000 * (level + 1);
-
-      // Fill rows 16-19 except 4 cells each
-      for (let y = 16; y < 20; y++) {
-        for (let x = 0; x < 6; x++) {
-          state.grid.cells[y]![x] = '#FF0000';
-        }
-      }
-
-      state.currentPiece!.position.x = 6;
-      state.currentPiece!.position.y = 15;
-
-      const score1 = state.score;
-      game.hardDrop();
-
-      const state2 = game.getGameState();
-      expect(state2.score - score1).toBe(expectedScore);
+    it('should match the formula: basePoints + comboBonus', () => {
+      // Formula: linesCleared * 10 + (linesCleared - 1) * 5
+      expect(validateScoringTable()).toBe(true);
     });
   });
 
-  describe('Score accumulation', () => {
-    it('should accumulate score across multiple line clears', () => {
-      const state = game.getGameState();
+  describe('calculateScore', () => {
+    it('should return 10 points for 1 line', () => {
+      expect(calculateScore(1)).toBe(10);
+    });
 
-      // Clear first line
-      for (let x = 0; x < 6; x++) {
-        state.grid.cells[19]![x] = '#FF0000';
-      }
-      state.currentPiece!.position.x = 6;
-      state.currentPiece!.position.y = 18;
-      game.hardDrop();
+    it('should return 25 points for 2 lines', () => {
+      expect(calculateScore(2)).toBe(25);
+    });
 
-      const score1 = game.getGameState().score;
+    it('should return 40 points for 3 lines', () => {
+      expect(calculateScore(3)).toBe(40);
+    });
 
-      // Clear second line
-      const state2 = game.getGameState();
-      for (let x = 0; x < 6; x++) {
-        state2.grid.cells[19]![x] = '#FF0000';
-      }
-      state2.currentPiece!.position.x = 6;
-      state2.currentPiece!.position.y = 18;
-      game.hardDrop();
+    it('should return 55 points for 4 lines', () => {
+      expect(calculateScore(4)).toBe(55);
+    });
 
-      const score2 = game.getGameState().score;
-
-      expect(score2).toBeGreaterThan(score1);
+    it('should throw error for invalid line counts', () => {
+      expect(() => calculateScore(0)).toThrow();
+      expect(() => calculateScore(5)).toThrow();
+      expect(() => calculateScore(-1)).toThrow();
     });
   });
 
-  describe('Event callbacks', () => {
-    it('should call onScoreChange when score increases', () => {
-      let newScore = 0;
-      game.onScoreChange = (score) => {
-        newScore = score;
-      };
-
-      const state = game.getGameState();
-      for (let x = 0; x < 6; x++) {
-        state.grid.cells[19]![x] = '#FF0000';
+  describe('calculateScoreFormula', () => {
+    it('should match table values', () => {
+      for (let lines = 1; lines <= 4; lines++) {
+        const tableScore = SCORING_TABLE[lines as keyof typeof SCORING_TABLE];
+        const formulaScore = calculateScoreFormula(lines);
+        expect(formulaScore).toBe(tableScore);
       }
-      state.currentPiece!.position.x = 6;
-      state.currentPiece!.position.y = 18;
+    });
 
-      game.hardDrop();
+    it('should follow formula: basePoints + comboBonus', () => {
+      // 1 line: 10 + 0 = 10
+      expect(calculateScoreFormula(1)).toBe(10);
 
-      expect(newScore).toBeGreaterThan(0);
+      // 2 lines: 20 + 5 = 25
+      expect(calculateScoreFormula(2)).toBe(25);
+
+      // 3 lines: 30 + 10 = 40
+      expect(calculateScoreFormula(3)).toBe(40);
+
+      // 4 lines: 40 + 15 = 55
+      expect(calculateScoreFormula(4)).toBe(55);
+    });
+  });
+
+  describe('Scoring Strategy', () => {
+    it('should reward multi-line clears more than single lines', () => {
+      const single = calculateScore(1);
+      const double = calculateScore(2);
+      const triple = calculateScore(3);
+      const tetris = calculateScore(4);
+
+      // Double should be more than 2x single
+      expect(double).toBeGreaterThan(single * 2);
+
+      // Triple should be more than 3x single
+      expect(triple).toBeGreaterThan(single * 3);
+
+      // Tetris should be more than 4x single
+      expect(tetris).toBeGreaterThan(single * 4);
+    });
+
+    it('should have increasing marginal value per line', () => {
+      // Points per line should increase with combo size
+      const pointsPerLine1 = calculateScore(1) / 1; // 10
+      const pointsPerLine2 = calculateScore(2) / 2; // 12.5
+      const pointsPerLine3 = calculateScore(3) / 3; // 13.33
+      const pointsPerLine4 = calculateScore(4) / 4; // 13.75
+
+      expect(pointsPerLine2).toBeGreaterThan(pointsPerLine1);
+      expect(pointsPerLine3).toBeGreaterThan(pointsPerLine2);
+      expect(pointsPerLine4).toBeGreaterThan(pointsPerLine3);
     });
   });
 });

@@ -2,11 +2,12 @@
  * Input Handler
  *
  * Manages keyboard input and maps keys to game actions.
- * - Down arrow: 2x speed acceleration (hold for controlled descent)
+ * - Down arrow: 4x speed acceleration (hold for controlled descent)
  * - Spacebar: Instant hard drop to bottom
  */
 
 import type { GameAPI } from '../game/types';
+import { DOWN_KEY_MULTIPLIER } from '../config/constants';
 
 export class InputHandler {
   private game: GameAPI;
@@ -66,8 +67,8 @@ export class InputHandler {
 
       case 'ArrowDown':
         e.preventDefault();
-        // Activate 2x speed multiplier when down arrow is held
-        this.speedMultiplier = 2.0;
+        // Activate 4x speed multiplier when down arrow is held
+        this.speedMultiplier = DOWN_KEY_MULTIPLIER;
         break;
 
       case 'ArrowUp':
@@ -113,9 +114,17 @@ export class InputHandler {
     switch (e.key) {
       case 'ArrowDown':
         e.preventDefault();
-        // Deactivate 2x speed multiplier when down arrow is released
+        // Deactivate 4x speed multiplier when down arrow is released
         this.speedMultiplier = 1.0;
         break;
     }
+  }
+
+  /**
+   * Get current speed multiplier from down key state
+   * @returns Speed multiplier (1.0 or DOWN_KEY_MULTIPLIER)
+   */
+  public getSpeedMultiplier(): number {
+    return this.speedMultiplier;
   }
 }

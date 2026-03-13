@@ -3,7 +3,7 @@
  *
  * Main game logic implementing the GameAPI interface.
  * Manages game state, piece movement, line clearing, and game flow.
- * Supports 2x speed multiplier for down arrow key.
+ * Supports 4x speed multiplier for down arrow key (multiplicative with level speed).
  */
 
 import type { GameAPI, GameState, GameStatus, Piece } from './types';
@@ -12,6 +12,7 @@ import { createRandomPiece } from './piece-factory';
 import { isValidPosition, isTouchingBottom } from './collision';
 import { rotatePiece } from './rotation';
 import { FALL_SPEEDS, LOCK_DELAY } from '../config/constants';
+import { getSpeedMultiplier } from './leveling';
 
 export class Game implements GameAPI {
   private state: GameState;
@@ -212,10 +213,15 @@ export class Game implements GameAPI {
     }
 
     const now = Date.now();
-    const fallSpeed = FALL_SPEEDS[Math.min(this.state.level, FALL_SPEEDS.length - 1)]!;
+    const baseFallSpeed = FALL_SPEEDS[Math.min(this.state.level, FALL_SPEEDS.length - 1)]!;
 
-    // Apply speed multiplier (2x when down arrow is held, 1x otherwise)
-    const adjustedFallSpeed = fallSpeed / this.speedMultiplier;
+    // Get level-based speed multiplier (1x, 2x, 3x, or 4x)
+    const levelMultiplier = getSpeedMultiplier(this.state.level);
+
+    // Apply multiplicative speed: level speed * down key multiplier
+    // Example: Level 2 (3x) + Down key (4x) = 12x total
+    const totalMultiplier = levelMultiplier * this.speedMultiplier;
+    const adjustedFallSpeed = baseFallSpeed / totalMultiplier;
 
     // Auto-fall with speed multiplier
     if (now - this.lastFallTime >= adjustedFallSpeed) {
