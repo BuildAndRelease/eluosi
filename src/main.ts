@@ -92,6 +92,6 @@ gameLoop();
 game.start();
 
 console.log('Eluosi initialized - Game ready');
-console.log('Controls: Arrow keys to move, Down arrow for 2x speed, Space for instant drop, P to pause, R to restart');
+console.log('Controls: Arrow keys to move, Down arrow for 4x speed, Space for instant drop, P to pause, R to restart');
 console.log(`High Score: ${persistentData.highScore}`);
 
