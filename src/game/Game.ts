@@ -11,8 +11,10 @@ import { createGrid, getCompleteRows, shiftRowsDown, lockPiece } from './grid';
 import { createRandomPiece } from './piece-factory';
 import { isValidPosition, isTouchingBottom } from './collision';
 import { rotatePiece } from './rotation';
-import { FALL_SPEEDS, LOCK_DELAY } from '../config/constants';
-import { getSpeedMultiplier } from './leveling';
+import { FALL_SPEEDS, LOCK_DELAY, GRID_WIDTH } from '../config/constants';
+import { getSpeedMultiplier, calculateLevel, shouldAddObstacleRow } from './leveling';
+import { calculateScore } from './scoring';
+import { generateObstacleRow, insertObstacleRow } from './obstacle-rows';
 
 export class Game implements GameAPI {
   private state: GameState;
@@ -257,8 +259,25 @@ export class Game implements GameAPI {
 
       // Update score and lines
       const newLines = this.state.lines + completeRows.length;
-      const newScore = this.state.score + this.calculateScore(completeRows.length);
-      const newLevel = Math.min(15, Math.floor(newScore / 500));
+      // Calculate score using new non-linear formula (10/25/40/55)
+      const pointsEarned = calculateScore(completeRows.length);
+      const newScore = this.state.score + pointsEarned;
+
+      // Calculate level using new progression system (200, 400, 600, 800...)
+      const oldLevel = this.state.level;
+      const newLevel = calculateLevel(newScore);
+
+      // Check if we should add obstacle row (level 4+)
+      if (newLevel > oldLevel && shouldAddObstacleRow(newLevel)) {
+        try {
+          const obstacleRow = generateObstacleRow(GRID_WIDTH);
+          const updatedCells = insertObstacleRow(newGrid.cells, obstacleRow);
+          newGrid = { ...newGrid, cells: updatedCells };
+        } catch (error) {
+          // If obstacle row causes game over, handle it below
+          console.warn('Obstacle row insertion failed:', error);
+        }
+      }
 
       this.state = {
         ...this.state,
@@ -314,16 +333,5 @@ export class Game implements GameAPI {
     } else {
       this.lockDelayStartTime = null;
     }
-  }
-
-  private calculateScore(linesCleared: number): number {
-    const baseScores: Record<number, number> = {
-      1: 50,
-      2: 300,
-      3: 500,
-      4: 1000,
-    };
-
-    return (baseScores[linesCleared] ?? 0) * (this.state.level + 1);
   }
 }
