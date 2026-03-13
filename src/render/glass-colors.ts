@@ -160,3 +160,21 @@ export function getGlassStyleForPiece(pieceType: PieceType): GlassBlockStyle {
 export function getGlassStyle(color: string): GlassBlockStyle {
   return hexToGlassStyle(color);
 }
+
+/**
+ * Parse rgba string to components
+ * @param rgba - RGBA color string
+ * @returns Object with r, g, b, a components
+ */
+export function parseRgba(rgba: string): { r: number; g: number; b: number; a: number } {
+  const match = rgba.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/);
+  if (!match) {
+    return { r: 255, g: 255, b: 255, a: 1 };
+  }
+  return {
+    r: parseInt(match[1]!, 10),
+    g: parseInt(match[2]!, 10),
+    b: parseInt(match[3]!, 10),
+    a: match[4] ? parseFloat(match[4]) : 1,
+  };
+}

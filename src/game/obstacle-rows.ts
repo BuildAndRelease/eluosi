@@ -22,7 +22,7 @@ export function generateObstacleRow(gridWidth: number): (string | null)[] {
 
   // Fill with random colors from palette
   for (let i = 0; i < gridWidth; i++) {
-    const randomColor = COLOR_PALETTE_ARRAY[Math.floor(Math.random() * COLOR_PALETTE_ARRAY.length)];
+    const randomColor = COLOR_PALETTE_ARRAY[Math.floor(Math.random() * COLOR_PALETTE_ARRAY.length)]!;
     row[i] = randomColor;
   }
 

@@ -38,14 +38,6 @@ export class InputHandler {
     document.removeEventListener('keyup', this.keyupHandler);
   }
 
-  /**
-   * Get current speed multiplier for game loop integration
-   * Returns 2.0 when down arrow is held, 1.0 otherwise
-   */
-  public getSpeedMultiplier(): number {
-    return this.speedMultiplier;
-  }
-
   private handleKeydown(e: KeyboardEvent): void {
     const state = this.game.getGameState();
 
