@@ -94,11 +94,11 @@ h1 {
   letter-spacing: 0.05em;
 }
 
-/* Frosted glass game board container */
+/* Frosted glass game board container with gradient */
 .glass-container {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: linear-gradient(135deg, rgba(224, 195, 252, 0.3) 0%, rgba(142, 197, 252, 0.3) 100%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 1.5rem;
   padding: 1.5rem;
@@ -109,9 +109,9 @@ h1 {
 }
 
 /* Fallback for browsers without backdrop-filter support */
-@supports not (backdrop-filter: blur(16px)) {
+@supports not (backdrop-filter: blur(20px)) {
   .glass-container {
-    background: rgba(255, 255, 255, 0.15);
+    background: linear-gradient(135deg, rgba(224, 195, 252, 0.4) 0%, rgba(142, 197, 252, 0.4) 100%);
   }
 }
 
